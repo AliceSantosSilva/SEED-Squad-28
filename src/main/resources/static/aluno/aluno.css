@@ -1,0 +1,52 @@
+/* ===== ALUNO - ESTILOS ESPECÍFICOS ===== */
+
+/* Ajustes nos cards de estatísticas do aluno */
+.stat-card.primary {
+    background-color: #2D4496;
+}
+.stat-card.success {
+    background-color: #00B34D;
+}
+.stat-card.warning {
+    background-color: #7B42F6;
+}
+.stat-card.info {
+    border: 1px solid #8d81c0;
+    background-color: white;
+}
+.stat-card.info .stat-label,
+.stat-card.info .stat-value,
+.stat-card.info .stat-note {
+    color: #1c0099;
+}
+.stat-card.info .stat-icon i {
+    color: #1616b1;
+    background: #e3e3f0;
+    padding: 8px;
+    border-radius: 9px;
+}
+.stat-card.primary .stat-icon i,
+.stat-card.success .stat-icon i,
+.stat-card.warning .stat-icon i {
+    color: white;
+    padding: 8px;
+    border-radius: 9px;
+}
+.stat-card.primary .stat-icon i {
+    background: #3d54a7;
+}
+.stat-card.success .stat-icon i {
+    background: #25c269;
+}
+.stat-card.warning .stat-icon i {
+    background: #905dff;
+}
+
+/* Posicionamento dos ícones (caso queira alinhar à direita) */
+.stat-card {
+    justify-content: space-between;
+}
+.stat-icon {
+    display: flex;
+    align-items: center;
+}

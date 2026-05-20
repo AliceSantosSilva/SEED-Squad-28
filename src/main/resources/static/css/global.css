@@ -1,0 +1,695 @@
+/* =============================================
+   PROVA SERGIPE — global.css
+   Estilos comuns a todos os perfis (Admin,
+   Professor, Aluno, Coordenação).
+   ============================================= */
+
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7fc;
+    color: #0f172a;
+    font-size: 13px;
+}
+
+/* Wrapper raiz da aplicação */
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* =============================================
+   SIDEBAR
+   ============================================= */
+.sidebar {
+    width: 220px;
+    background: #0b1120;
+    position: fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform 0.2s ease;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 16px;
+    border-bottom: 1px solid #1e2a3e;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(145deg, #3b82f6, #0ea5e9);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+}
+
+.logo-text-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-text {
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+}
+
+/* .logo-subtitle é o texto genérico sob o logo.
+   Perfis que precisam de um rótulo diferente
+   (ex.: "Área do Aluno") devem sobrescrever
+   em seu próprio CSS. */
+.logo-subtitle {
+    font-size: 0.7rem;
+    color: #99a8bd;
+    margin-top: 2px;
+}
+
+.nav {
+    flex: 1;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: #9aa4bf;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.nav-item i {
+    font-size: 1.2rem;
+}
+
+.nav-item:hover {
+    background: #1e2a3a;
+    color: white;
+}
+
+.nav-item.active {
+    background: linear-gradient(95deg, #3b82f6, #06b6d4);
+    color: white;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+.sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid #1e2a3a;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* =============================================
+   MAIN
+   ============================================= */
+.main {
+    margin-left: 220px;
+    padding: 16px 24px;
+    min-height: 100vh;
+}
+
+/* =============================================
+   HEADER
+   ============================================= */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #1e293b;
+}
+
+.notification-btn {
+    position: relative;
+    background: white;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.notification-btn i {
+    font-size: 1.3rem;
+    color: #475569;
+}
+
+.notification-btn:hover {
+    background: #bac5cf;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #00B34D;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid white;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 6px 16px 6px 8px;
+    border-radius: 40px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1.3;
+    color: #0f172a;
+}
+
+.user-role {
+    font-size: 10px;
+    color: #64748b;
+}
+
+.welcome {
+    margin-top: -60px;
+    margin-bottom: 20px;
+}
+
+.welcome h1 {
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.welcome p {
+    font-size: 12px;
+    color: #475569;
+}
+
+/* =============================================
+   DASHBOARD GRID
+   ============================================= */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+}
+
+/* =============================================
+   CARDS BASE
+   ============================================= */
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.card-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.card-header h2 i {
+    font-size: 1.1rem;
+}
+
+.link {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+/* =============================================
+   STATS — estrutura base
+   (Cores e posicionamento de ícone ficam em
+   cada CSS de perfil.)
+   ============================================= */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    border-radius: 9px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.stat-label {
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: #ffffff;
+    text-wrap: nowrap;
+}
+
+.stat-label2 {
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: #1c0099;
+    text-wrap: nowrap;
+}
+
+.stat-value {
+    margin-bottom: 6px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: white;
+}
+
+.stat-value2 {
+    margin-bottom: 6px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #1c0099;
+}
+
+.stat-note {
+    font-size: 9px;
+    color: #ffffff;
+    text-wrap: nowrap;
+}
+
+.stat-note2 {
+    font-size: 9px;
+    color: #1c0099;
+}
+
+.stat-note.positive {
+    font-weight: bold;
+    color: #34ffbb;
+    text-wrap: nowrap;
+}
+
+/* Wrapper interno dos textos do stat-card */
+.stat-data {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-icon i {
+    font-size: 1.3rem;
+}
+
+/* =============================================
+   EXAMS
+   ============================================= */
+.exams-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.exam-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafd;
+    padding: 10px 12px;
+    border-radius: 14px;
+}
+
+/* Wrapper do bloco de texto dentro do exam-item */
+.exam-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.exam-name {
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+.exam-date {
+    font-size: 10px;
+    color: #586f8c;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.exam-date i {
+    font-size: 10px;
+}
+
+.btn-start {
+    background: #002685;
+    border: none;
+    padding: 5px 14px;
+    border-radius: 30px;
+    color: white;
+    font-weight: 600;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-start i {
+    font-size: 10px;
+}
+
+.btn-start:hover {
+    background-color: #6048ff;
+}
+
+/* =============================================
+   RESULTS
+   ============================================= */
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eef2f8;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Wrapper do bloco de texto dentro do result-item */
+.result-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.result-name {
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+.result-date {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+.result-score {
+    font-weight: 700;
+    font-size: 12px;
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 30px;
+}
+
+.result-grade {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 30px;
+    background: #f1f5f9;
+    color: #334155;
+}
+
+/* Variantes de cor para nota */
+.result-grade.good    { background: #dcfce7; color: #166534; }
+.result-grade.average { background: #fef9c3; color: #854d0e; }
+.result-grade.bad     { background: #fee2e2; color: #991b1b; }
+
+/* Navegação interna do calendário (prev/next dentro do card-header) */
+.calendar-nav {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+/* =============================================
+   CALENDAR
+   ============================================= */
+.calendar-card {
+    max-width: 100%;
+    width: 100%;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: 600;
+    margin: 6px 0 4px;
+    color: #405570;
+    font-size: 12px;
+}
+
+.calendar-weekdays span {
+    padding: 4px 0;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.calendar-day {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.calendar-day.has-event.exam::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    width: 3px;
+    height: 3px;
+    background: #3b82f6;
+    border-radius: 50%;
+}
+
+.calendar-day.has-event.deadline::after {
+    background: #f59e0b;
+}
+
+.calendar-day.has-event.meeting::after {
+    background: #8b5cf6;
+}
+
+.calendar-day.today {
+    background: #3b82f6;
+    color: white;
+    font-weight: bold;
+}
+
+.calendar-legend {
+    display: flex;
+    gap: 25px;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid #eef2f8;
+}
+
+.legend {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    color: #334155;
+}
+
+.legend i {
+    font-size: 0.9rem;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.dot.exam     { background: #3b82f6; }
+.dot.deadline { background: #f59e0b; }
+.dot.meeting  { background: #8b5cf6; }
+
+.cal-nav {
+    background: #f1f5f9;
+    border: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cal-nav i {
+    font-size: 14px;
+}
+
+/* =============================================
+   PÁGINAS EXTRAS (listas completas)
+   ============================================= */
+.exams-list-full,
+.results-list-full {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px;
+}
+
+/* =============================================
+   RESPONSIVIDADE
+   ============================================= */
+@media (max-width: 1000px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 12px;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
