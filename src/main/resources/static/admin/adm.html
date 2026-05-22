@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Painel Administrativo • Prova Sergipe</title>
+
+    <!-- FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- BOXICONS -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/src/main/resources/static/css/global.css">
+    <link rel="stylesheet" href="/src/main/resources/static/admin/adm.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo-area">
+
+            <div class="logo-icon">
+                PS
+            </div>
+
+            <div class="logo-text-wrapper">
+                <span class="logo-text">
+                    Prova Sergipe
+                </span>
+
+                <span class="logo-subtitle">
+                    Painel Administrativo
+                </span>
+            </div>
+
+        </div>
+
+        <nav class="nav">
+
+            <a href="#" class="nav-item active" data-page="dashboard">
+                <i class='bx bxs-dashboard'></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#" class="nav-item" data-page="alunos">
+                <i class='bx bxs-user-detail'></i>
+                <span>Alunos</span>
+            </a>
+
+            <a href="#" class="nav-item" data-page="professores">
+                <i class='bx bxs-book-alt'></i>
+                <span>Professores</span>
+            </a>
+
+            <a href="#" class="nav-item" data-page="provas">
+                <i class='bx bxs-file-doc'></i>
+                <span>Provas</span>
+            </a>
+
+            <a href="#" class="nav-item" data-page="relatorios">
+                <i class='bx bxs-bar-chart-alt-2'></i>
+                <span>Relatórios</span>
+            </a>
+
+            <a href="#" class="nav-item" data-page="configuracoes">
+                <i class='bx bxs-cog'></i>
+                <span>Configurações</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+
+            <a href="#" class="nav-item" data-page="ajuda">
+                <i class='bx bx-help-circle'></i>
+                <span>Ajuda</span>
+            </a>
+
+            <a href="#" class="nav-item" id="logout">
+                <i class='bx bx-log-out'></i>
+                <span>Sair</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <div class="content">
+
+            <!-- HEADER -->
+            <header class="header">
+
+                <div class="header-left">
+
+                    <button class="menu-btn" id="menuBtn">
+                        <i class='bx bx-menu'></i>
+                    </button>
+
+                </div>
+
+                <div class="header-right">
+
+                    <button class="notification-btn">
+
+                        <i class='bx bx-bell'></i>
+
+                        <span class="notification-badge">
+                            3
+                        </span>
+
+                    </button>
+
+                    <div class="user">
+
+                        <div class="user-avatar">
+                            C
+                        </div>
+
+                        <div class="user-details">
+
+                            <span class="user-name">
+                                Caio Sampaio
+                            </span>
+
+                            <span class="user-role">
+                                Administrador
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+            <!-- WELCOME -->
+            <section class="welcome">
+
+                <h1>
+                    Dashboard Administrativo
+                </h1>
+
+                <p>
+                    Gerencie alunos, provas, relatórios e atividades do sistema.
+                </p>
+
+            </section>
+
+            <!-- STATS -->
+            <section class="stats">
+
+                <div class="stat-card primary">
+
+                    <div class="stat-data">
+
+                        <span class="stat-label">
+                            Total de Alunos
+                        </span>
+
+                        <h2 class="stat-value">
+                            2.548
+                        </h2>
+
+                        <span class="stat-note positive">
+                            +12% este mês
+                        </span>
+
+                    </div>
+
+                    <div class="stat-icon">
+                        <i class='bx bxs-graduation'></i>
+                    </div>
+
+                </div>
+
+                <div class="stat-card success">
+
+                    <div class="stat-data">
+
+                        <span class="stat-label">
+                            Provas Aplicadas
+                        </span>
+
+                        <h2 class="stat-value">
+                            184
+                        </h2>
+
+                        <span class="stat-note positive">
+                            +8 novas provas
+                        </span>
+
+                    </div>
+
+                    <div class="stat-icon">
+                        <i class='bx bx-file'></i>
+                    </div>
+
+                </div>
+
+                <div class="stat-card warning">
+
+                    <div class="stat-data">
+
+                        <span class="stat-label">
+                            Professores
+                        </span>
+
+                        <h2 class="stat-value">
+                            96
+                        </h2>
+
+                        <span class="stat-note">
+                            12 ativos hoje
+                        </span>
+
+                    </div>
+
+                    <div class="stat-icon">
+                        <i class='bx bxs-user-badge'></i>
+                    </div>
+
+                </div>
+
+                <div class="stat-card info">
+
+                    <div class="stat-data">
+
+                        <span class="stat-label2">
+                            Média Geral
+                        </span>
+
+                        <h2 class="stat-value2">
+                            8.7
+                        </h2>
+
+                        <span class="stat-note2">
+                            desempenho excelente
+                        </span>
+
+                    </div>
+
+                    <div class="stat-icon">
+                        <i class='bx bx-trending-up'></i>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- DASHBOARD GRID -->
+            <section class="dashboard-grid">
+
+                <!-- LEFT -->
+                <div class="left-column">
+
+                    <!-- PROVAS -->
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h2>
+                                <i class='bx bx-file'></i>
+                                Últimas Provas
+                            </h2>
+
+                            <a href="#" class="link view-all-link" data-page="provas">
+                                Ver todas
+                                <i class='bx bx-right-arrow-alt'></i>
+                            </a>
+
+                        </div>
+
+                        <div class="exams-list">
+
+                            <div class="exam-item">
+
+                                <div class="exam-info">
+
+                                    <span class="exam-name">
+                                        Matemática • 3º Ano
+                                    </span>
+
+                                    <span class="exam-date">
+                                        <i class='bx bx-calendar'></i>
+                                        20 Maio 2026
+                                    </span>
+
+                                </div>
+
+                                <button class="btn-start">
+                                    <i class='bx bx-show'></i>
+                                    Abrir
+                                </button>
+
+                            </div>
+
+                            <div class="exam-item">
+
+                                <div class="exam-info">
+
+                                    <span class="exam-name">
+                                        Português • 2º Ano
+                                    </span>
+
+                                    <span class="exam-date">
+                                        <i class='bx bx-calendar'></i>
+                                        22 Maio 2026
+                                    </span>
+
+                                </div>
+
+                                <button class="btn-start">
+                                    <i class='bx bx-show'></i>
+                                    Abrir
+                                </button>
+
+                            </div>
+
+                            <div class="exam-item">
+
+                                <div class="exam-info">
+
+                                    <span class="exam-name">
+                                        Ciências • 1º Ano
+                                    </span>
+
+                                    <span class="exam-date">
+                                        <i class='bx bx-calendar'></i>
+                                        25 Maio 2026
+                                    </span>
+
+                                </div>
+
+                                <button class="btn-start">
+                                    <i class='bx bx-show'></i>
+                                    Abrir
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- RESULTADOS -->
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h2>
+                                <i class='bx bx-bar-chart-alt-2'></i>
+                                Desempenho Recente
+                            </h2>
+
+                            <a href="#" class="link view-all-link" data-page="relatorios">
+                                Relatórios
+                                <i class='bx bx-right-arrow-alt'></i>
+                            </a>
+
+                        </div>
+
+                        <div class="results-list">
+
+                            <div class="result-item">
+
+                                <div class="result-info">
+
+                                    <span class="result-name">
+                                        Escola Estadual João Alves
+                                    </span>
+
+                                    <span class="result-date">
+                                        Atualizado hoje
+                                    </span>
+
+                                </div>
+
+                                <span class="result-grade good">
+                                    9.2
+                                </span>
+
+                            </div>
+
+                            <div class="result-item">
+
+                                <div class="result-info">
+
+                                    <span class="result-name">
+                                        Colégio Estadual Vitória
+                                    </span>
+
+                                    <span class="result-date">
+                                        Atualizado ontem
+                                    </span>
+
+                                </div>
+
+                                <span class="result-grade average">
+                                    7.5
+                                </span>
+
+                            </div>
+
+                            <div class="result-item">
+
+                                <div class="result-info">
+
+                                    <span class="result-name">
+                                        Escola Municipal Centro
+                                    </span>
+
+                                    <span class="result-date">
+                                        Atualizado hoje
+                                    </span>
+
+                                </div>
+
+                                <span class="result-grade bad">
+                                    5.1
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- RIGHT -->
+                <div class="right-column">
+
+                    <!-- CALENDÁRIO -->
+                    <div class="card calendar-card">
+
+                        <div class="card-header">
+
+                            <h2>
+                                <i class='bx bx-calendar'></i>
+                                Calendário
+                            </h2>
+
+                        </div>
+
+                        <div id="admin-calendar"></div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+<!-- JS -->
+<script src="/src/main/resources/static/js/global.js" defer></script>
+<script src="/src/main/resources/static/admin/admin.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,349 @@
+/* =========================================
+   ADMIN DASHBOARD
+   Complementa o global.css (apenas estilos exclusivos)
+========================================= */
+
+/* =========================================
+   STATS ADMIN (cores específicas dos cards)
+========================================= */
+
+.stat-card.primary {
+    background: #2D4496;
+}
+
+.stat-card.success {
+    background: #00B34D;
+}
+
+.stat-card.warning {
+    background: #7B42F6;
+}
+
+.stat-card.info {
+    background: white;
+    border: 1px solid #dbe4f0;
+}
+
+/* =========================================
+   STAT ICON (cores e fundo dos ícones)
+========================================= */
+
+.stat-card .stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-card .stat-icon i {
+    font-size: 20px;
+}
+
+/* Ícone do card azul */
+.stat-card.primary .stat-icon {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Ícone do card verde */
+.stat-card.success .stat-icon {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Ícone do card roxo */
+.stat-card.warning .stat-icon {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Ícone do card branco */
+.stat-card.info .stat-icon {
+    background: #e8edff;
+    color: #1e3a8a;
+}
+
+/* =========================================
+   DASHBOARD GRID (ajuste específico)
+========================================= */
+
+.dashboard-grid {
+    margin-top: 10px;
+}
+
+/* =========================================
+   BUTTONS (efeito específico admin)
+========================================= */
+
+.btn-start {
+    transition: 0.2s ease;
+}
+
+.btn-start:hover {
+    transform: scale(1.03);
+}
+
+/* =========================================
+   CALENDAR (efeito hover específico)
+========================================= */
+
+.calendar-day:hover {
+    background: #eef4ff;
+}
+
+/* =========================================
+   QUICK ACTIONS (exclusivo admin)
+========================================= */
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.quick-action-btn {
+    border: none;
+    background: white;
+    border-radius: 18px;
+    padding: 18px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.quick-action-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.quick-action-icon.blue {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.quick-action-icon.green {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.quick-action-icon.purple {
+    background: #ede9fe;
+    color: #7c3aed;
+}
+
+.quick-action-icon.orange {
+    background: #ffedd5;
+    color: #ea580c;
+}
+
+.quick-action-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.quick-action-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.quick-action-subtitle {
+    font-size: 11px;
+    color: #64748b;
+}
+
+/* =========================================
+   TABLES (exclusivo admin)
+========================================= */
+
+.table-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.table-header,
+.student-row {
+    display: grid;
+    grid-template-columns:
+        minmax(220px, 2fr)
+        minmax(120px, 1fr)
+        minmax(100px, 1fr)
+        minmax(180px, 2fr)
+        minmax(100px, 1fr)
+        60px;
+    align-items: center;
+    padding: 18px 24px;
+}
+
+.table-header {
+    background: #f8fafc;
+    font-weight: 700;
+    color: #334155;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.student-row {
+    border-bottom: 1px solid #eef2f8;
+    transition: 0.2s ease;
+}
+
+.student-row:hover {
+    background: #f8fbff;
+}
+
+.student-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.student-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7B42F6, #5b21b6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.student-email {
+    color: #64748b;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.class-badge {
+    background: #eef2ff;
+    color: #1e3a8a;
+    border: 1px solid #c7d2fe;
+    width: fit-content;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-active,
+.status-inactive {
+    width: fit-content;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-inactive {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.action-menu {
+    cursor: pointer;
+    font-size: 20px;
+    color: #64748b;
+}
+
+/* =========================================
+   PAGINATION (exclusivo admin)
+========================================= */
+
+.table-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+}
+
+.pagination-info {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-btn,
+.page-number {
+    border: none;
+    background: #f8fafc;
+    min-width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #334155;
+    transition: 0.2s ease;
+}
+
+.page-btn:hover,
+.page-number:hover {
+    background: #e2e8f0;
+}
+
+.page-number.active {
+    background: #2563eb;
+    color: white;
+}
+
+/* =========================================
+   RESPONSIVIDADE (específica admin)
+========================================= */
+
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    .calendar-card {
+        position: static;
+    }
+}
+
+@media (max-width: 900px) {
+    .table-header,
+    .student-row {
+        min-width: 900px;
+    }
+}
+
+@media (max-width: 760px) {
+    .welcome {
+        margin-top: 0;
+    }
+    .welcome h1 {
+        font-size: 26px;
+    }
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+}

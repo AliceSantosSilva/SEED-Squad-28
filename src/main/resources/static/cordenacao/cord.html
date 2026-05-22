@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Prova Sergipe | Painel da Coordenação</title>
+
+    <!-- Boxicons -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+
+    <!-- CSS: global primeiro, depois específico -->
+    <link rel="stylesheet" href="/src/main/resources/static/css/global.css">
+    <link rel="stylesheet" href="/src/main/resources/static/cordenacao/cord.css">
+</head>
+<body>
+    <div class="app">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">PS</div>
+                <div class="logo-text-wrapper">
+                    <span class="logo-text">Prova Sergipe</span>
+                    <span class="logo-subtitle">Coordenação</span>
+                </div>
+            </div>
+            <nav class="nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <i class='bx bxs-dashboard'></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-page="escolas">
+                    <i class='bx bxs-school'></i>
+                    <span>Escolas</span>
+                </a>
+                <a href="#" class="nav-item" data-page="professores">
+                    <i class='bx bxs-user-badge'></i>
+                    <span>Professores</span>
+                </a>
+                <a href="#" class="nav-item" data-page="turmas">
+                    <i class='bx bx-group'></i>
+                    <span>Turmas</span>
+                </a>
+                <a href="#" class="nav-item" data-page="provas">
+                    <i class='bx bx-book-open'></i>
+                    <span>Provas</span>
+                </a>
+                <a href="#" class="nav-item" data-page="relatorios">
+                    <i class='bx bx-line-chart'></i>
+                    <span>Relatórios</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item" data-page="configuracoes">
+                    <i class='bx bx-cog'></i>
+                    <span>Configurações</span>
+                </a>
+                <a href="#" class="nav-item" id="logout">
+                    <i class='bx bx-log-out-circle'></i>
+                    <span>Sair</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main">
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-btn" id="menuBtn"><i class='bx bx-menu'></i></button>
+                </div>
+                <div class="header-right">
+                    <button class="notification-btn">
+                        <i class='bx bx-bell'></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+                    <div class="user">
+                        <div class="user-avatar">C</div>
+                        <div class="user-details">
+                            <div class="user-name">Carla Mendes</div>
+                            <div class="user-role">Coordenadora</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content">
+                <!-- DASHBOARD -->
+                <div class="page active" id="dashboard-page">
+                    <div class="welcome">
+                        <h1>Olá, Carla!</h1>
+                        <p>Gerencie escolas, professores e acompanhe os resultados das avaliações.</p>
+                    </div>
+
+                    <div class="stats">
+                        <div class="stat-card primary">
+                            <div class="stat-data">
+                                <div class="stat-label">Escolas</div>
+                                <div class="stat-value">12</div>
+                                <div class="stat-note">Na rede estadual</div>
+                            </div>
+                            <div class="stat-icon"><i class='bx bxs-school'></i></div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-data">
+                                <div class="stat-label">Professores</div>
+                                <div class="stat-value">96</div>
+                                <div class="stat-note">Ativos</div>
+                            </div>
+                            <div class="stat-icon"><i class='bx bxs-user-badge'></i></div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-data">
+                                <div class="stat-label">Turmas</div>
+                                <div class="stat-value">48</div>
+                                <div class="stat-note">Cadastradas</div>
+                            </div>
+                            <div class="stat-icon"><i class='bx bx-group'></i></div>
+                        </div>
+                        <div class="stat-card info">
+                            <div class="stat-data">
+                                <div class="stat-label2">Provas Aplicadas</div>
+                                <div class="stat-value2">184</div>
+                                <div class="stat-note2">Este ano</div>
+                            </div>
+                            <div class="stat-icon"><i class='bx bx-notepad'></i></div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="left-column">
+                            <!-- Escolas Recentes -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2><i class='bx bxs-school'></i> Escolas Recentes</h2>
+                                    <a href="#" class="link view-all-link" data-page="escolas">Ver todas <i class='bx bx-right-arrow-alt'></i></a>
+                                </div>
+                                <div class="exams-list" id="escolasRecentesList"></div>
+                            </div>
+                            <!-- Professores Recentes -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2><i class='bx bxs-user-badge'></i> Professores Recentes</h2>
+                                    <a href="#" class="link view-all-link" data-page="professores">Ver todos <i class='bx bx-right-arrow-alt'></i></a>
+                                </div>
+                                <div class="results-list" id="professoresRecentesList"></div>
+                            </div>
+                        </div>
+                        <div class="right-column">
+                            <!-- Calendário -->
+                            <div class="card calendar-card">
+                                <div class="card-header">
+                                    <h2><i class='bx bx-calendar'></i> Calendário</h2>
+                                </div>
+                                <div id="coordenacao-calendar"></div>
+                            </div>
+                            <!-- Ações Rápidas -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2><i class='bx bx-rocket'></i> Ações Rápidas</h2>
+                                </div>
+                                <div class="quick-actions">
+                                    <button class="quick-action-btn" data-action="nova-escola"><i class='bx bxs-school'></i> Nova Escola</button>
+                                    <button class="quick-action-btn" data-action="novo-professor"><i class='bx bxs-user-plus'></i> Novo Professor</button>
+                                    <button class="quick-action-btn" data-action="nova-turma"><i class='bx bx-group'></i> Nova Turma</button>
+                                    <button class="quick-action-btn" data-action="relatorio-geral"><i class='bx bx-bar-chart-alt'></i> Relatório Geral</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA ESCOLAS -->
+                <div class="page" id="escolas-page" style="display:none;">
+                    <div class="provas-header">
+                        <div><h1>Escolas</h1><p>Gerencie as escolas da rede estadual</p></div>
+                        <button class="btn-new-exam" id="btnNovaEscola"><i class="bx bx-plus"></i> Nova Escola</button>
+                    </div>
+                    <div class="card provas-table-card">
+                        <table class="provas-table">
+                            <thead><tr><th>Escola</th><th>Cidade</th><th>Professores</th><th>Alunos</th><th>Status</th></tr></thead>
+                            <tbody id="escolasTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PÁGINA PROFESSORES -->
+                <div class="page" id="professores-page" style="display:none;">
+                    <div class="provas-header">
+                        <div><h1>Professores</h1><p>Gerencie os professores da rede</p></div>
+                        <button class="btn-new-exam" id="btnNovoProfessor"><i class="bx bx-plus"></i> Novo Professor</button>
+                    </div>
+                    <div class="card provas-table-card">
+                        <table class="provas-table">
+                            <thead><tr><th>Nome</th><th>Escola</th><th>Disciplina</th><th>Turmas</th><th>Status</th></tr></thead>
+                            <tbody id="professoresTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PÁGINA TURMAS (simplificada) -->
+                <div class="page" id="turmas-page" style="display:none;">
+                    <div class="provas-header">
+                        <div><h1>Turmas</h1><p>Gerencie as turmas</p></div>
+                        <button class="btn-new-exam" id="btnNovaTurma"><i class="bx bx-plus"></i> Nova Turma</button>
+                    </div>
+                    <div class="card provas-table-card">
+                        <table class="provas-table">
+                            <thead><tr><th>Turma</th><th>Escola</th><th>Professor</th><th>Alunos</th><th>Média</th></tr></thead>
+                            <tbody id="turmasTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PÁGINA PROVAS (visão geral) -->
+                <div class="page" id="provas-page" style="display:none;">
+                    <div class="provas-header">
+                        <div><h1>Provas</h1><p>Acompanhe todas as provas aplicadas</p></div>
+                    </div>
+                    <div class="card provas-table-card">
+                        <table class="provas-table">
+                            <thead><tr><th>Prova</th><th>Escola</th><th>Turma</th><th>Data</th><th>Participação</th><th>Média</th></tr></thead>
+                            <tbody id="provasTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PÁGINA RELATÓRIOS -->
+                <div class="page" id="relatorios-page" style="display:none;">
+                    <div class="card"><div class="card-header"><h2>Relatórios Gerais</h2></div><p>Em desenvolvimento</p></div>
+                </div>
+
+                <!-- PÁGINA CONFIGURAÇÕES -->
+                <div class="page" id="configuracoes-page" style="display:none;">
+                    <div class="card"><div class="card-header"><h2>Configurações</h2></div><p>Preferências e ajustes do sistema</p></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/src/main/resources/static/js/global.js" defer></script>
+    <script src="/src/main/resources/static/cordenacao/cord.js" defer></script>
+</body>
+</html>

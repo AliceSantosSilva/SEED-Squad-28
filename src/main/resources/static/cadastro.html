@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro | Prova Sergipe</title>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/main/resources/static/css/global.css">
+    <link rel="stylesheet" href="/src/main/resources/static/css/auth.css">
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-left">
+                <h1>Cadastro</h1>
+                <form id="cadastroForm">
+                    <div class="input-group">
+                        <input type="email" id="email" placeholder="E-mail" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="password" placeholder="Senha" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="confirmPassword" placeholder="Confirme a senha" required>
+                    </div>
+                    <button type="submit" class="btn-auth">Cadastrar</button>
+                </form>
+                <p class="auth-link">Já tem conta? <a href="/login.html">Entrar</a></p>
+                <div class="social-icons">
+                    <div class="icon">G</div>
+                    <div class="icon">@</div>
+                </div>
+            </div>
+            <div class="auth-right">
+                <img src="/src/main/resources/static/img/logo.jpeg" alt="Secretaria de Educação de Sergipe">
+                <h2>Onde tem estudo tem o<br>futuro se transformando</h2>
+            </div>
+        </div>
+    </div>
+    <script src="/src/main/resources/static/js/global.js" defer></script>
+    <script src="/src/main/resources/static/js/auth.js" defer></script>
+</body>
+</html>

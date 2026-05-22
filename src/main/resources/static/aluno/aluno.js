@@ -18,46 +18,31 @@ const eventsData = [
 
 let currentCalendarDate = new Date();
 
-// ─── Calendário ───────────────────────────────────────────────────────────────
-function renderCalendar() {
-    const year     = currentCalendarDate.getFullYear();
-    const month    = currentCalendarDate.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+function initCalendar() {
 
-    const container = document.getElementById('calendarDays');
-    if (!container) return;
+    renderCalendar(
+        'calendarContainer',
+        currentCalendarDate,
+        eventsData,
+        (date, events) => {
 
-    let html = '';
+            if (!events.length) {
+                exibirAlerta('Sem eventos nesta data.', 'info');
+                return;
+            }
 
-    // Células vazias antes do 1º dia do mês
-    for (let i = 0; i < firstDay; i++) html += '<div class="calendar-day"></div>';
+            exibirAlerta(
+                events.map(e => e.title).join(' • '),
+                'info'
+            );
+        }
+    );
 
-    const hoje = new Date();
-    const hojeLocal = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0') + '-' + String(hoje.getDate()).padStart(2, '0');
+    const container = document.getElementById('calendarContainer');
 
-    for (let d = 1; d <= daysInMonth; d++) {
-        const dateStr  = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        const dayEvents = eventsData.filter(ev => ev.date === dateStr);
-        const eventClass = dayEvents.length ? `has-event ${dayEvents[0].type}` : '';
-        const isToday = (dateStr === hojeLocal);
-        const titles   = dayEvents.map(e => e.title).join('\n') || 'Sem eventos';
-
-        html += `<div class="calendar-day ${eventClass} ${isToday ? 'today' : ''}"
-                      onclick="alert('${titles.replace(/'/g, "\\'")}')">${d}</div>`;
-    }
-
-    container.innerHTML = html;
-
-    // Atualiza cabeçalho com mês/ano atual
-    const monthNames = [
-        'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-        'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
-    ];
-    const headerTitle = document.querySelector('.calendar-card .card-header h2');
-    if (headerTitle) {
-        headerTitle.innerHTML = `<i class='bx bx-calendar'></i> ${monthNames[month]} ${year}`;
-    }
+    container?.addEventListener('calendarChange', (e) => {
+        currentCalendarDate = e.detail.date;
+    });
 }
 
 // ─── Troca de páginas ─────────────────────────────────────────────────────────
@@ -174,17 +159,6 @@ function initExamButtons() {
     });
 }
 
-// ─── Navegação do calendário (prev/next) ──────────────────────────────────────
-function initCalendarNav() {
-    document.getElementById('prevMonth')?.addEventListener('click', () => {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-        renderCalendar();
-    });
-    document.getElementById('nextMonth')?.addEventListener('click', () => {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-        renderCalendar();
-    });
-}
 
 // ─── Logout ───────────────────────────────────────────────────────────────────
 function initLogout() {
@@ -203,13 +177,12 @@ function initLogout() {
 
 // ─── Inicialização ────────────────────────────────────────────────────────────
 function init() {
-    renderCalendar();
+    initCalendar();
     setupPages();
     fillFullExams();
     fillFullResults();
     mobileMenu();
     initExamButtons();
-    initCalendarNav();
     initLogout();
 }
 

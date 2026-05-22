@@ -131,6 +131,11 @@ body {
     margin-left: 220px;
     padding: 16px 24px;
     min-height: 100vh;
+    width: calc(100% - 220px);
+}
+
+.content {
+    width: 100%;
 }
 
 /* =============================================
@@ -266,7 +271,7 @@ body {
    ============================================= */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: minmax(0, 2fr) 380px;
     gap: 24px;
     align-items: start;
 }
@@ -278,9 +283,6 @@ body {
 }
 
 .right-column {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
     width: 100%;
 }
 
@@ -673,7 +675,43 @@ body {
 
 @media (max-width: 760px) {
     .sidebar {
-        transform: translateX(-100%);
+    transform: translateX(-100%);
+    }
+    
+    .header {
+    align-items: flex-start;
+    gap: 12px;
+    }
+
+    .header-right {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 10px;
+    }
+
+    .notification-btn {
+    min-width: 38px;
+    min-height: 38px;
+    flex-shrink: 0;
+    }
+
+    .user {
+    padding-right: 10px;
+    max-width: calc(100% - 50px);
+    }
+
+    .user-details {
+    min-width: 0;
+    }
+
+    .user-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+
+    .user-class-info {
+    display: none;
     }
 
     .sidebar.open {
@@ -682,8 +720,9 @@ body {
 
     .main {
         margin-left: 0;
+        width: 100%;
         padding: 12px;
-    }
+    }  
 
     .menu-btn {
         display: block;

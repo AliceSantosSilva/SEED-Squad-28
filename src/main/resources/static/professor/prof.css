@@ -1,0 +1,170 @@
+/* =========================================
+   PROFESSOR - ESTILOS ESPECÍFICOS
+========================================= */
+
+/* Cores dos cards (dashboard) */
+.stat-card.primary { background: #2D4496; }
+.stat-card.success { background: #00B34D; }
+.stat-card.warning { background: #7B42F6; }
+.stat-card.info { background: white; border: 1px solid #dbe4f0; }
+
+.stat-card { justify-content: space-between; }
+.stat-icon { display: flex; align-items: center; }
+.stat-card.primary .stat-icon i,
+.stat-card.success .stat-icon i,
+.stat-card.warning .stat-icon i {
+    color: white; padding: 8px; border-radius: 9px;
+}
+.stat-card.primary .stat-icon i { background: #3d54a7; }
+.stat-card.success .stat-icon i { background: #25c269; }
+.stat-card.warning .stat-icon i { background: #905dff; }
+.stat-card.info .stat-icon i {
+    color: #1616b1; background: #e3e3f0; padding: 8px; border-radius: 9px;
+}
+.stat-card.info .stat-label,
+.stat-card.info .stat-value,
+.stat-card.info .stat-note { color: #1c0099; }
+
+/* PÁGINA PROVAS */
+.provas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.provas-header h1 { font-size: 28px; margin-bottom: 4px; }
+.provas-header p { color: #64748b; font-size: 13px; }
+.btn-new-exam {
+    background: #00B34D;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-new-exam i { font-size: 18px; }
+.provas-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.filter-btn {
+    border: none;
+    background: #e2e8f0;
+    color: #334155;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.filter-btn.active {
+    background: #2563eb;
+    color: white;
+}
+.provas-table-card {
+    overflow-x: auto;
+    padding: 0;
+}
+.provas-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.provas-table th, .provas-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+.status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+.status.ativa { background: #dcfce7; color: #166534; }
+.status.encerrada { background: #fee2e2; color: #991b1b; }
+.status.rascunho { background: #e2e8f0; color: #475569; }
+
+/* PÁGINA TURMAS */
+.turmas-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.turma-stat-card {
+    background: white;
+    border-radius: 18px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.turma-stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.turma-stat-icon i { font-size: 24px; }
+.turma-stat-icon.blue { background: #e0e7ff; color: #1e40af; }
+.turma-stat-icon.green { background: #dcfce7; color: #00B34D; }
+.turma-stat-icon.purple { background: #ede9fe; color: #7c3aed; }
+.turma-stat-card h2 { font-size: 28px; margin-bottom: 2px; }
+.turma-stat-card span { color: #64748b; font-size: 13px; }
+
+.turmas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+.turma-card {
+    background: white;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.turma-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.turma-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.turma-info-box {
+    text-align: center;
+    background: #f8fafc;
+    padding: 8px;
+    border-radius: 12px;
+}
+.turma-info-box strong { display: block; font-size: 18px; }
+.turma-info-box span { font-size: 11px; color: #64748b; }
+.green-text { color: #00B34D !important; }
+.turma-btn {
+    width: 100%;
+    background: #1e3a8a;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 14px;
+    cursor: pointer;
+}
+.turma-btn:hover { background: #2563eb; }
+
+/* RESPONSIVIDADE (complementar) */
+@media (max-width: 1000px) {
+    .turmas-stats { grid-template-columns: 1fr; }
+    .turmas-grid { grid-template-columns: 1fr; }
+}

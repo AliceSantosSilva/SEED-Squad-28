@@ -1,0 +1,98 @@
+/* =========================================
+   COORDENAÇÃO - ESTILOS ESPECÍFICOS
+========================================= */
+
+/* Cores dos cards (dashboard) */
+.stat-card.primary { background: #2D4496; }
+.stat-card.success { background: #00B34D; }
+.stat-card.warning { background: #7B42F6; }
+.stat-card.info { background: white; border: 1px solid #dbe4f0; }
+
+.stat-card { justify-content: space-between; }
+.stat-icon { display: flex; align-items: center; }
+.stat-card.primary .stat-icon i,
+.stat-card.success .stat-icon i,
+.stat-card.warning .stat-icon i {
+    color: white; padding: 8px; border-radius: 9px;
+}
+.stat-card.primary .stat-icon i { background: #3d54a7; }
+.stat-card.success .stat-icon i { background: #25c269; }
+.stat-card.warning .stat-icon i { background: #905dff; }
+.stat-card.info .stat-icon i {
+    color: #1616b1; background: #e3e3f0; padding: 8px; border-radius: 9px;
+}
+.stat-card.info .stat-label,
+.stat-card.info .stat-value,
+.stat-card.info .stat-note { color: #1c0099; }
+
+/* Ações rápidas */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+}
+.quick-action-btn {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.quick-action-btn:hover {
+    background: #eef2ff;
+    transform: translateY(-2px);
+}
+.quick-action-btn i {
+    font-size: 20px;
+    color: #2563eb;
+}
+
+/* Tabelas */
+.provas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.provas-header h1 { font-size: 28px; margin-bottom: 4px; }
+.provas-header p { color: #64748b; font-size: 13px; }
+.btn-new-exam {
+    background: #00B34D;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.provas-table-card {
+    overflow-x: auto;
+    padding: 0;
+}
+.provas-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.provas-table th, .provas-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+.status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+.status.ativo { background: #dcfce7; color: #166534; }
+.status.inativo { background: #fee2e2; color: #991b1b; }
