@@ -1,9 +1,11 @@
 package com.projeto.sistema_escolar.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "disciplinas")
+@Data
 public class Disciplina {
 
     @Id
@@ -13,10 +15,5 @@ public class Disciplina {
     @Column(unique = true)
     private String nome;
 
-    // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
 }
