@@ -1,8 +1,6 @@
 package com.projeto.sistema_escolar.controller;
 
-import com.projeto.sistema_escolar.model.Disciplina;
 import com.projeto.sistema_escolar.model.Questao;
-import com.projeto.sistema_escolar.model.Serie;
 import com.projeto.sistema_escolar.service.DisciplinaService;
 import com.projeto.sistema_escolar.service.QuestaoService;
 import com.projeto.sistema_escolar.service.SerieService;
