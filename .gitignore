@@ -1,33 +1,58 @@
-HELP.md
+# Compiled files
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+*.class
+*.jar
+*.war
+*.ear
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
+# IDE files
+.idea/
 *.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+.settings/
+.project
+.classpath
 .vscode/
+.mvn/
+mvnw
+mvnw.cmd
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Spring Boot configuration (contains database credentials)
+application.properties
+application-dev.properties
+application-prod.properties
+*.properties
+
+# Secret files (Supabase keys, passwords)
+*.secret
+*.key
+*.pem
+.env
+.env.local
+.env.production
+
+# Supabase specific
+supabase/config.toml
+supabase/.env
+
+# Frontend build
+node_modules/
+dist/
+build/
+*.min.js
+*.min.css
+
+# Backup files
+*.bak
+*.old
+*.orig
+
+# Test output
+test-output/

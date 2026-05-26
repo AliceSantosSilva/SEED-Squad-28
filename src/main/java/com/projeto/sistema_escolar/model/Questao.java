@@ -16,32 +16,62 @@ public class Questao {
 
     private Integer dificuldade;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "disciplina_id")
     private Disciplina disciplina;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "serie_id")
     private Serie serie;
 
     private LocalDate dataCriacao = LocalDate.now();
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getEnunciado() { return enunciado; }
-    public void setEnunciado(String enunciado) { this.enunciado = enunciado; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Integer getDificuldade() { return dificuldade; }
-    public void setDificuldade(Integer dificuldade) { this.dificuldade = dificuldade; }
+    public String getEnunciado() {
+        return enunciado;
+    }
 
-    public Disciplina getDisciplina() { return disciplina; }
-    public void setDisciplina(Disciplina disciplina) { this.disciplina = disciplina; }
+    public void setEnunciado(String enunciado) {
+        this.enunciado = enunciado;
+    }
 
-    public Serie getSerie() { return serie; }
-    public void setSerie(Serie serie) { this.serie = serie; }
+    public Integer getDificuldade() {
+        return dificuldade;
+    }
 
-    public LocalDate getDataCriacao() { return dataCriacao; }
-    public void setDataCriacao(LocalDate dataCriacao) { this.dataCriacao = dataCriacao; }
+    public void setDificuldade(Integer dificuldade) {
+        this.dificuldade = dificuldade;
+    }
+
+    public Disciplina getDisciplina() {
+        return disciplina;
+    }
+
+    public void setDisciplina(Disciplina disciplina) {
+        this.disciplina = disciplina;
+    }
+
+    public Serie getSerie() {
+        return serie;
+    }
+
+    public void setSerie(Serie serie) {
+        this.serie = serie;
+    }
+
+    public LocalDate getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDate dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
 }

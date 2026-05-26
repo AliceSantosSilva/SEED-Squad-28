@@ -10,9 +10,15 @@ import java.util.Optional;
 public class QuestaoService {
 
     private final QuestaoRepository repository;
+    private final DisciplinaService disciplinaService;
+    private final SerieService serieService;
 
-    public QuestaoService(QuestaoRepository repository) {
+    public QuestaoService(QuestaoRepository repository, 
+                          DisciplinaService disciplinaService,
+                          SerieService serieService) {
         this.repository = repository;
+        this.disciplinaService = disciplinaService;
+        this.serieService = serieService;
     }
 
     public List<Questao> listarTodos() {
@@ -24,6 +30,15 @@ public class QuestaoService {
     }
 
     public Questao salvar(Questao questao) {
+        // Garantir que disciplina e serie sejam carregadas completamente
+        if (questao.getDisciplina() != null && questao.getDisciplina().getId() != null) {
+            disciplinaService.buscarPorId(questao.getDisciplina().getId())
+                .ifPresent(questao::setDisciplina);
+        }
+        if (questao.getSerie() != null && questao.getSerie().getId() != null) {
+            serieService.buscarPorId(questao.getSerie().getId())
+                .ifPresent(questao::setSerie);
+        }
         return repository.save(questao);
     }
 

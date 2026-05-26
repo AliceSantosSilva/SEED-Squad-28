@@ -1,7 +1,11 @@
 package com.projeto.sistema_escolar.controller;
 
+import com.projeto.sistema_escolar.model.Disciplina;
 import com.projeto.sistema_escolar.model.Questao;
+import com.projeto.sistema_escolar.model.Serie;
+import com.projeto.sistema_escolar.service.DisciplinaService;
 import com.projeto.sistema_escolar.service.QuestaoService;
+import com.projeto.sistema_escolar.service.SerieService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -12,9 +16,15 @@ import java.util.List;
 public class QuestaoController {
 
     private final QuestaoService service;
+    private final DisciplinaService disciplinaService;
+    private final SerieService serieService;
 
-    public QuestaoController(QuestaoService service) {
+    public QuestaoController(QuestaoService service,
+                             DisciplinaService disciplinaService,
+                             SerieService serieService) {
         this.service = service;
+        this.disciplinaService = disciplinaService;
+        this.serieService = serieService;
     }
 
     @GetMapping
@@ -47,8 +57,19 @@ public class QuestaoController {
     }
 
     @PostMapping
-    public Questao criar(@RequestBody Questao questao) {
-        return service.salvar(questao);
+    public ResponseEntity<Questao> criar(@RequestBody Questao questao) {
+        // Buscar disciplina e serie completas do banco antes de salvar
+        if (questao.getDisciplina() != null && questao.getDisciplina().getId() != null) {
+            disciplinaService.buscarPorId(questao.getDisciplina().getId())
+                .ifPresent(questao::setDisciplina);
+        }
+        if (questao.getSerie() != null && questao.getSerie().getId() != null) {
+            serieService.buscarPorId(questao.getSerie().getId())
+                .ifPresent(questao::setSerie);
+        }
+        
+        Questao saved = service.salvar(questao);
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/{id}")
@@ -56,8 +77,19 @@ public class QuestaoController {
         return service.buscarPorId(id).map(questao -> {
             questao.setEnunciado(questaoAtualizada.getEnunciado());
             questao.setDificuldade(questaoAtualizada.getDificuldade());
-            questao.setDisciplina(questaoAtualizada.getDisciplina());
-            questao.setSerie(questaoAtualizada.getSerie());
+            
+            // Garantir disciplina completa
+            if (questaoAtualizada.getDisciplina() != null && questaoAtualizada.getDisciplina().getId() != null) {
+                disciplinaService.buscarPorId(questaoAtualizada.getDisciplina().getId())
+                    .ifPresent(questao::setDisciplina);
+            }
+            
+            // Garantir serie completa
+            if (questaoAtualizada.getSerie() != null && questaoAtualizada.getSerie().getId() != null) {
+                serieService.buscarPorId(questaoAtualizada.getSerie().getId())
+                    .ifPresent(questao::setSerie);
+            }
+            
             return ResponseEntity.ok(service.salvar(questao));
         }).orElse(ResponseEntity.notFound().build());
     }
