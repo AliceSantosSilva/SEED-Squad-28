@@ -1,7 +1,9 @@
 package com.projeto.sistema_escolar.controller;
 
+import com.projeto.sistema_escolar.dto.SerieRequestDTO;
 import com.projeto.sistema_escolar.model.Serie;
 import com.projeto.sistema_escolar.service.SerieService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -30,15 +32,25 @@ public class SerieController {
     }
 
     @PostMapping
-    public Serie criar(@RequestBody Serie serie) {
-        return service.salvar(serie);
+    public ResponseEntity<Serie> criar(@Valid @RequestBody SerieRequestDTO dto) {
+
+        Serie serie = new Serie();
+
+
+        serie.setNome(dto.getNome());
+        serie.setNivelEnsino(dto.getNivelEnsino());
+
+
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).body(service.salvar(serie));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Serie> atualizar(@PathVariable Long id, @RequestBody Serie serieAtualizada) {
+    public ResponseEntity<Serie> atualizar(@PathVariable Long id, @Valid @RequestBody SerieRequestDTO dto) {
         return service.buscarPorId(id).map(serie -> {
-            serie.setNome(serieAtualizada.getNome());
-            serie.setNivelEnsino(serieAtualizada.getNivelEnsino());
+
+            serie.setNome(dto.getNome());
+            serie.setNivelEnsino(dto.getNivelEnsino());
+
             return ResponseEntity.ok(service.salvar(serie));
         }).orElse(ResponseEntity.notFound().build());
     }

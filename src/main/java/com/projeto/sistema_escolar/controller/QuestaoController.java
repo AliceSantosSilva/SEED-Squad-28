@@ -1,7 +1,9 @@
 package com.projeto.sistema_escolar.controller;
 
+import com.projeto.sistema_escolar.dto.QuestaoRequestDTO;
 import com.projeto.sistema_escolar.model.Questao;
 import com.projeto.sistema_escolar.service.QuestaoService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -47,17 +49,38 @@ public class QuestaoController {
     }
 
     @PostMapping
-    public Questao criar(@RequestBody Questao questao) {
-        return service.salvar(questao);
+    public ResponseEntity<Questao> criar(@Valid @RequestBody QuestaoRequestDTO dto) {
+        Questao questao = new Questao();
+        questao.setEnunciado(dto.getEnunciado());
+        questao.setDificuldade(dto.getDificuldade());
+
+
+        com.projeto.sistema_escolar.model.Disciplina disciplina = new com.projeto.sistema_escolar.model.Disciplina();
+        disciplina.setId(dto.getDisciplinaId());
+        questao.setDisciplina(disciplina);
+
+
+        com.projeto.sistema_escolar.model.Serie serie = new com.projeto.sistema_escolar.model.Serie();
+        serie.setId(dto.getSerieId());
+        questao.setSerie(serie);
+
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).body(service.salvar(questao));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Questao> atualizar(@PathVariable Long id, @RequestBody Questao questaoAtualizada) {
+    public ResponseEntity<Questao> atualizar(@PathVariable Long id, @Valid @RequestBody QuestaoRequestDTO dto) {
         return service.buscarPorId(id).map(questao -> {
-            questao.setEnunciado(questaoAtualizada.getEnunciado());
-            questao.setDificuldade(questaoAtualizada.getDificuldade());
-            questao.setDisciplina(questaoAtualizada.getDisciplina());
-            questao.setSerie(questaoAtualizada.getSerie());
+            questao.setEnunciado(dto.getEnunciado());
+            questao.setDificuldade(dto.getDificuldade());
+
+            com.projeto.sistema_escolar.model.Disciplina disciplina = new com.projeto.sistema_escolar.model.Disciplina();
+            disciplina.setId(dto.getDisciplinaId());
+            questao.setDisciplina(disciplina);
+
+            com.projeto.sistema_escolar.model.Serie serie = new com.projeto.sistema_escolar.model.Serie();
+            serie.setId(dto.getSerieId());
+            questao.setSerie(serie);
+
             return ResponseEntity.ok(service.salvar(questao));
         }).orElse(ResponseEntity.notFound().build());
     }

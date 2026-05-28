@@ -1,7 +1,9 @@
 package com.projeto.sistema_escolar.controller;
 
+import com.projeto.sistema_escolar.dto.UsuarioRequestDTO;
 import com.projeto.sistema_escolar.model.Usuario;
 import com.projeto.sistema_escolar.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -30,18 +32,26 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public Usuario criar(@RequestBody Usuario usuario) {
-        return service.salvar(usuario);
+    public ResponseEntity<Usuario> criar(@Valid @RequestBody UsuarioRequestDTO dto) {
+        Usuario usuario = new Usuario();
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        usuario.setSenha(dto.getSenha());
+        usuario.setCargo(dto.getCargo());
+
+
+
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).body(service.salvar(usuario));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuarioAtualizado) {
+    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO dto) {
         return service.buscarPorId(id).map(usuario -> {
-            usuario.setNome(usuarioAtualizado.getNome());
-            usuario.setEmail(usuarioAtualizado.getEmail());
-            usuario.setSenha(usuarioAtualizado.getSenha());
-            usuario.setCargo(usuarioAtualizado.getCargo());
-            usuario.setAtivo(usuarioAtualizado.getAtivo());
+            usuario.setNome(dto.getNome());
+            usuario.setEmail(dto.getEmail());
+            usuario.setSenha(dto.getSenha());
+            usuario.setCargo(dto.getCargo());
+
             return ResponseEntity.ok(service.salvar(usuario));
         }).orElse(ResponseEntity.notFound().build());
     }

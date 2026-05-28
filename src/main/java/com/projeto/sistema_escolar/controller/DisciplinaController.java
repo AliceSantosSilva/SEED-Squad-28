@@ -1,7 +1,10 @@
 package com.projeto.sistema_escolar.controller;
 
+import com.projeto.sistema_escolar.dto.DisciplinaRequestDTO;
 import com.projeto.sistema_escolar.model.Disciplina;
 import com.projeto.sistema_escolar.service.DisciplinaService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -30,14 +33,23 @@ public class DisciplinaController {
     }
 
     @PostMapping
-    public Disciplina criar(@RequestBody Disciplina disciplina) {
-        return service.salvar(disciplina);
+    public ResponseEntity<Disciplina> criar(@Valid @RequestBody DisciplinaRequestDTO dto) {
+
+        Disciplina disciplina = new Disciplina();
+
+
+        disciplina.setNome(dto.getNome());
+
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(disciplina));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Disciplina> atualizar(@PathVariable Long id, @RequestBody Disciplina disciplinaAtualizada) {
+    public ResponseEntity<Disciplina> atualizar(@PathVariable Long id, @Valid @RequestBody DisciplinaRequestDTO dto) {
         return service.buscarPorId(id).map(disciplina -> {
-            disciplina.setNome(disciplinaAtualizada.getNome());
+
+            disciplina.setNome(dto.getNome());
+
             return ResponseEntity.ok(service.salvar(disciplina));
         }).orElse(ResponseEntity.notFound().build());
     }
