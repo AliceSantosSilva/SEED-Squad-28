@@ -3,6 +3,7 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.Alternativa;
 import com.projeto.sistema_escolar.repository.AlternativaRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,11 +20,11 @@ public class AlternativaService {
         return repository.findAll();
     }
 
-    public Optional<Alternativa> buscarPorId(Long id) {
+    public Optional<Alternativa> buscarPorId(Integer id) {
         return repository.findById(id);
     }
 
-    public List<Alternativa> buscarPorQuestao(Long questaoId) {
+    public List<Alternativa> buscarPorQuestao(Integer questaoId) {
         return repository.findByQuestaoId(questaoId);
     }
 
@@ -31,11 +32,11 @@ public class AlternativaService {
         return repository.save(alternativa);
     }
 
-    public void deletar(Long id) {
+    public void deletar(Integer id) {
         repository.deleteById(id);
     }
 
-    public boolean existePorId(Long id) {
+    public boolean existePorId(Integer id) {
         return repository.existsById(id);
     }
 }

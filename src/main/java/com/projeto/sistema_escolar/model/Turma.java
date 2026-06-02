@@ -10,11 +10,14 @@ public class Turma {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String nome;
-    private String serie;
     private Integer ano;
+
+    @ManyToOne
+    @JoinColumn(name = "serie_id")
+    private Serie serie;
 
     @ManyToOne
     @JoinColumn(name = "escola_id")
@@ -25,17 +28,17 @@ public class Turma {
     private List<Usuario> alunos;
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 
-    public String getSerie() { return serie; }
-    public void setSerie(String serie) { this.serie = serie; }
-
     public Integer getAno() { return ano; }
     public void setAno(Integer ano) { this.ano = ano; }
+
+    public Serie getSerie() { return serie; }
+    public void setSerie(Serie serie) { this.serie = serie; }
 
     public Escola getEscola() { return escola; }
     public void setEscola(Escola escola) { this.escola = escola; }

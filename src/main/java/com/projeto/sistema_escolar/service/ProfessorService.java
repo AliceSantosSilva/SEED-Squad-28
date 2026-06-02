@@ -3,6 +3,7 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.Professor;
 import com.projeto.sistema_escolar.repository.ProfessorRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,11 +20,11 @@ public class ProfessorService {
         return repository.findAll();
     }
 
-    public Optional<Professor> buscarPorId(Long id) {
+    public Optional<Professor> buscarPorId(Integer id) {
         return repository.findById(id);
     }
 
-    public Optional<Professor> buscarPorUsuarioId(Long usuarioId) {
+    public Optional<Professor> buscarPorUsuarioId(Integer usuarioId) {
         return repository.findByUsuarioId(usuarioId);
     }
 
@@ -31,11 +32,11 @@ public class ProfessorService {
         return repository.save(professor);
     }
 
-    public void deletar(Long id) {
+    public void deletar(Integer id) {
         repository.deleteById(id);
     }
 
-    public boolean existePorId(Long id) {
+    public boolean existePorId(Integer id) {
         return repository.existsById(id);
     }
 }

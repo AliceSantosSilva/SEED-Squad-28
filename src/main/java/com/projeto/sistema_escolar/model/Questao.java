@@ -9,7 +9,7 @@ public class Questao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String enunciado;
@@ -27,51 +27,21 @@ public class Questao {
     private LocalDate dataCriacao = LocalDate.now();
 
     // Getters e Setters
-    public Long getId() {
-        return id;
-    }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getEnunciado() { return enunciado; }
+    public void setEnunciado(String enunciado) { this.enunciado = enunciado; }
 
-    public String getEnunciado() {
-        return enunciado;
-    }
+    public Integer getDificuldade() { return dificuldade; }
+    public void setDificuldade(Integer dificuldade) { this.dificuldade = dificuldade; }
 
-    public void setEnunciado(String enunciado) {
-        this.enunciado = enunciado;
-    }
+    public Disciplina getDisciplina() { return disciplina; }
+    public void setDisciplina(Disciplina disciplina) { this.disciplina = disciplina; }
 
-    public Integer getDificuldade() {
-        return dificuldade;
-    }
+    public Serie getSerie() { return serie; }
+    public void setSerie(Serie serie) { this.serie = serie; }
 
-    public void setDificuldade(Integer dificuldade) {
-        this.dificuldade = dificuldade;
-    }
-
-    public Disciplina getDisciplina() {
-        return disciplina;
-    }
-
-    public void setDisciplina(Disciplina disciplina) {
-        this.disciplina = disciplina;
-    }
-
-    public Serie getSerie() {
-        return serie;
-    }
-
-    public void setSerie(Serie serie) {
-        this.serie = serie;
-    }
-
-    public LocalDate getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(LocalDate dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
+    public LocalDate getDataCriacao() { return dataCriacao; }
+    public void setDataCriacao(LocalDate dataCriacao) { this.dataCriacao = dataCriacao; }
 }

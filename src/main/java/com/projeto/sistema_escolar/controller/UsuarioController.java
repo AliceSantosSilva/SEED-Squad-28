@@ -1,23 +1,31 @@
 package com.projeto.sistema_escolar.controller;
 
+import com.projeto.sistema_escolar.dto.UsuarioRequestDTO;
+import com.projeto.sistema_escolar.dto.UsuarioResponseDTO;
+import com.projeto.sistema_escolar.model.Perfil;
+import com.projeto.sistema_escolar.model.Turma;
 import com.projeto.sistema_escolar.model.Usuario;
-import com.projeto.sistema_escolar.service.UsuarioService;
 import com.projeto.sistema_escolar.service.PerfilService;
 import com.projeto.sistema_escolar.service.TurmaService;
+import com.projeto.sistema_escolar.service.UsuarioService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     private final UsuarioService service;
     private final PerfilService perfilService;
     private final TurmaService turmaService;
 
-    public UsuarioController(UsuarioService service, 
+    public UsuarioController(UsuarioService service,
                              PerfilService perfilService,
                              TurmaService turmaService) {
         this.service = service;
@@ -25,62 +33,87 @@ public class UsuarioController {
         this.turmaService = turmaService;
     }
 
+    // ==================== LISTAR TODOS ====================
+    
     @GetMapping
-    public List<Usuario> listar() {
-        return service.listarTodos();
+    public List<UsuarioResponseDTO> listar() {
+        return service.listarTodos().stream()
+                .map(UsuarioResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
+    // ==================== BUSCAR POR ID ====================
+    
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
-        return service.buscarPorId(id)
-                .map(ResponseEntity::ok)
+    public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Integer id) {
+        Optional<Usuario> usuario = service.buscarPorId(id);
+        return usuario.map(u -> ResponseEntity.ok(new UsuarioResponseDTO(u)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // ==================== CRIAR NOVO USUÁRIO ====================
+    
     @PostMapping
-    public ResponseEntity<Usuario> criar(@RequestBody Usuario usuario) {
-        // Buscar e associar Perfil se fornecido
-        if (usuario.getPerfil() != null && usuario.getPerfil().getId() != null) {
-            perfilService.buscarPorId(usuario.getPerfil().getId())
-                .ifPresent(usuario::setPerfil);
+    public ResponseEntity<UsuarioResponseDTO> criar(@Valid @RequestBody UsuarioRequestDTO usuarioDTO) {
+        Usuario usuario = new Usuario();
+        usuario.setNome(usuarioDTO.getNome());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setSenha(usuarioDTO.getSenha());
+        usuario.setAtivo(usuarioDTO.getAtivo() != null ? usuarioDTO.getAtivo() : true);
+        
+        // Associar Perfil
+        if (usuarioDTO.getPerfilId() != null) {
+            Optional<Perfil> perfil = perfilService.buscarPorId(usuarioDTO.getPerfilId());
+            perfil.ifPresent(usuario::setPerfil);
         }
         
-        // Buscar e associar Turma se fornecido
-        if (usuario.getTurma() != null && usuario.getTurma().getId() != null) {
-            turmaService.buscarPorId(usuario.getTurma().getId())
-                .ifPresent(usuario::setTurma);
+        // Associar Turma
+        if (usuarioDTO.getTurmaId() != null) {
+            Optional<Turma> turma = turmaService.buscarPorId(usuarioDTO.getTurmaId());
+            turma.ifPresent(usuario::setTurma);
         }
         
         Usuario saved = service.salvar(usuario);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UsuarioResponseDTO(saved));
     }
 
+    // ==================== ATUALIZAR USUÁRIO ====================
+    
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuarioAtualizado) {
+    public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Integer id,
+                                                        @Valid @RequestBody UsuarioRequestDTO usuarioDTO) {
         return service.buscarPorId(id).map(usuario -> {
-            usuario.setNome(usuarioAtualizado.getNome());
-            usuario.setEmail(usuarioAtualizado.getEmail());
-            usuario.setSenha(usuarioAtualizado.getSenha());
-            usuario.setAtivo(usuarioAtualizado.getAtivo());
+            usuario.setNome(usuarioDTO.getNome());
+            usuario.setEmail(usuarioDTO.getEmail());
+            usuario.setAtivo(usuarioDTO.getAtivo() != null ? usuarioDTO.getAtivo() : usuario.getAtivo());
+            
+            // Atualizar senha se fornecida
+            String novaSenha = usuarioDTO.getSenha();
+            if (novaSenha != null && !novaSenha.trim().isEmpty()) {
+                usuario.setSenha(novaSenha);
+            }
             
             // Atualizar Perfil
-            if (usuarioAtualizado.getPerfil() != null && usuarioAtualizado.getPerfil().getId() != null) {
-                perfilService.buscarPorId(usuarioAtualizado.getPerfil().getId())
-                    .ifPresent(usuario::setPerfil);
+            if (usuarioDTO.getPerfilId() != null) {
+                perfilService.buscarPorId(usuarioDTO.getPerfilId())
+                        .ifPresent(usuario::setPerfil);
             }
             
             // Atualizar Turma
-            if (usuarioAtualizado.getTurma() != null && usuarioAtualizado.getTurma().getId() != null) {
-                turmaService.buscarPorId(usuarioAtualizado.getTurma().getId())
-                    .ifPresent(usuario::setTurma);
+            if (usuarioDTO.getTurmaId() != null) {
+                turmaService.buscarPorId(usuarioDTO.getTurmaId())
+                        .ifPresent(usuario::setTurma);
             }
             
-            return ResponseEntity.ok(service.salvar(usuario));
+            Usuario updated = service.salvar(usuario);
+            return ResponseEntity.ok(new UsuarioResponseDTO(updated));
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    // ==================== DELETAR USUÁRIO ====================
+    
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         if (service.existePorId(id)) {
             service.deletar(id);
             return ResponseEntity.noContent().build();

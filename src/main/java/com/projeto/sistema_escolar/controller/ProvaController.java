@@ -2,13 +2,16 @@ package com.projeto.sistema_escolar.controller;
 
 import com.projeto.sistema_escolar.model.Prova;
 import com.projeto.sistema_escolar.service.ProvaService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/provas")
-@CrossOrigin(origins = "*")
 public class ProvaController {
 
     private final ProvaService service;
@@ -23,24 +26,24 @@ public class ProvaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Prova> buscarPorId(@PathVariable Long id) {
-        return service.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Prova> buscarPorId(@PathVariable Integer id) {
+        Optional<Prova> prova = service.buscarPorId(id);
+        return prova.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/professor/{professorId}")
-    public List<Prova> buscarPorProfessor(@PathVariable Long professorId) {
+    public List<Prova> buscarPorProfessor(@PathVariable Integer professorId) {
         return service.buscarPorProfessor(professorId);
     }
 
     @PostMapping
-    public Prova criar(@RequestBody Prova prova) {
-        return service.salvar(prova);
+    public ResponseEntity<Prova> criar(@Valid @RequestBody Prova prova) {
+        Prova saved = service.salvar(prova);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Prova> atualizar(@PathVariable Long id, @RequestBody Prova provaAtualizada) {
+    public ResponseEntity<Prova> atualizar(@PathVariable Integer id, @Valid @RequestBody Prova provaAtualizada) {
         return service.buscarPorId(id).map(prova -> {
             prova.setTitulo(provaAtualizada.getTitulo());
             prova.setDataInicio(provaAtualizada.getDataInicio());
@@ -51,13 +54,14 @@ public class ProvaController {
             prova.setNotaMinimaAprovacao(provaAtualizada.getNotaMinimaAprovacao());
             prova.setGerarVariacoes(provaAtualizada.isGerarVariacoes());
             prova.setProfessor(provaAtualizada.getProfessor());
+            prova.setTurma(provaAtualizada.getTurma());
             prova.setQuestoes(provaAtualizada.getQuestoes());
             return ResponseEntity.ok(service.salvar(prova));
         }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         if (service.existePorId(id)) {
             service.deletar(id);
             return ResponseEntity.noContent().build();

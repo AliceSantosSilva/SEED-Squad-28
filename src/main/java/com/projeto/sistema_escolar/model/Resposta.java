@@ -9,11 +9,11 @@ public class Resposta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "aluno_id")
-    private Aluno aluno;
+    private Usuario aluno;
 
     @ManyToOne
     @JoinColumn(name = "prova_id")
@@ -31,11 +31,11 @@ public class Resposta {
     private LocalDateTime dataHoraResposta = LocalDateTime.now();
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public Aluno getAluno() { return aluno; }
-    public void setAluno(Aluno aluno) { this.aluno = aluno; }
+    public Usuario getAluno() { return aluno; }
+    public void setAluno(Usuario aluno) { this.aluno = aluno; }
 
     public Prova getProva() { return prova; }
     public void setProva(Prova prova) { this.prova = prova; }

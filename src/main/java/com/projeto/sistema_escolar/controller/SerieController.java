@@ -2,13 +2,16 @@ package com.projeto.sistema_escolar.controller;
 
 import com.projeto.sistema_escolar.model.Serie;
 import com.projeto.sistema_escolar.service.SerieService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/series")
-@CrossOrigin(origins = "*")
 public class SerieController {
 
     private final SerieService service;
@@ -23,19 +26,19 @@ public class SerieController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Serie> buscarPorId(@PathVariable Long id) {
-        return service.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Serie> buscarPorId(@PathVariable Integer id) {
+        Optional<Serie> serie = service.buscarPorId(id);
+        return serie.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Serie criar(@RequestBody Serie serie) {
-        return service.salvar(serie);
+    public ResponseEntity<Serie> criar(@Valid @RequestBody Serie serie) {
+        Serie saved = service.salvar(serie);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Serie> atualizar(@PathVariable Long id, @RequestBody Serie serieAtualizada) {
+    public ResponseEntity<Serie> atualizar(@PathVariable Integer id, @Valid @RequestBody Serie serieAtualizada) {
         return service.buscarPorId(id).map(serie -> {
             serie.setNome(serieAtualizada.getNome());
             serie.setNivelEnsino(serieAtualizada.getNivelEnsino());
@@ -44,7 +47,7 @@ public class SerieController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         if (service.existePorId(id)) {
             service.deletar(id);
             return ResponseEntity.noContent().build();

@@ -3,6 +3,7 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.Questao;
 import com.projeto.sistema_escolar.repository.QuestaoRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -25,12 +26,11 @@ public class QuestaoService {
         return repository.findAll();
     }
 
-    public Optional<Questao> buscarPorId(Long id) {
+    public Optional<Questao> buscarPorId(Integer id) {
         return repository.findById(id);
     }
 
     public Questao salvar(Questao questao) {
-        // Garantir que disciplina e serie sejam carregadas completamente
         if (questao.getDisciplina() != null && questao.getDisciplina().getId() != null) {
             disciplinaService.buscarPorId(questao.getDisciplina().getId())
                 .ifPresent(questao::setDisciplina);
@@ -42,23 +42,23 @@ public class QuestaoService {
         return repository.save(questao);
     }
 
-    public void deletar(Long id) {
+    public void deletar(Integer id) {
         repository.deleteById(id);
     }
 
-    public boolean existePorId(Long id) {
+    public boolean existePorId(Integer id) {
         return repository.existsById(id);
     }
 
-    public List<Questao> buscarPorDisciplina(Long disciplinaId) {
+    public List<Questao> buscarPorDisciplina(Integer disciplinaId) {
         return repository.findByDisciplinaId(disciplinaId);
     }
 
-    public List<Questao> buscarPorSerie(Long serieId) {
+    public List<Questao> buscarPorSerie(Integer serieId) {
         return repository.findBySerieId(serieId);
     }
 
-    public List<Questao> buscarPorDisciplinaESerie(Long disciplinaId, Long serieId) {
+    public List<Questao> buscarPorDisciplinaESerie(Integer disciplinaId, Integer serieId) {
         return repository.findByDisciplinaIdAndSerieId(disciplinaId, serieId);
     }
 }

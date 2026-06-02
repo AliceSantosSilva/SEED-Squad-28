@@ -4,8 +4,8 @@ import com.projeto.sistema_escolar.model.Questao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
-public interface QuestaoRepository extends JpaRepository<Questao, Long> {
-    List<Questao> findByDisciplinaId(Long disciplinaId);
-    List<Questao> findBySerieId(Long serieId);
-    List<Questao> findByDisciplinaIdAndSerieId(Long disciplinaId, Long serieId);
+public interface QuestaoRepository extends JpaRepository<Questao, Integer> {
+    List<Questao> findByDisciplinaId(Integer disciplinaId);
+    List<Questao> findBySerieId(Integer serieId);
+    List<Questao> findByDisciplinaIdAndSerieId(Integer disciplinaId, Integer serieId);
 }

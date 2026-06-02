@@ -9,7 +9,7 @@ public class Alternativa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)
     private String texto;
@@ -22,8 +22,8 @@ public class Alternativa {
     private Questao questao;
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public String getTexto() { return texto; }
     public void setTexto(String texto) { this.texto = texto; }

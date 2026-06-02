@@ -3,6 +3,7 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.TokenSessao;
 import com.projeto.sistema_escolar.repository.TokenSessaoRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public class TokenSessaoService {
         return repository.findAll();
     }
 
-    public Optional<TokenSessao> buscarPorId(Long id) {
+    public Optional<TokenSessao> buscarPorId(Integer id) {
         return repository.findById(id);
     }
 
@@ -27,7 +28,7 @@ public class TokenSessaoService {
         return repository.findByToken(token);
     }
 
-    public List<TokenSessao> buscarPorUsuario(Long usuarioId) {
+    public List<TokenSessao> buscarPorUsuario(Integer usuarioId) {
         return repository.findByUsuarioId(usuarioId);
     }
 
@@ -35,11 +36,11 @@ public class TokenSessaoService {
         return repository.save(token);
     }
 
-    public void deletar(Long id) {
+    public void deletar(Integer id) {
         repository.deleteById(id);
     }
 
-    public boolean existePorId(Long id) {
+    public boolean existePorId(Integer id) {
         return repository.existsById(id);
     }
 }

@@ -3,6 +3,7 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.Prova;
 import com.projeto.sistema_escolar.repository.ProvaRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,11 +20,11 @@ public class ProvaService {
         return repository.findAll();
     }
 
-    public Optional<Prova> buscarPorId(Long id) {
+    public Optional<Prova> buscarPorId(Integer id) {
         return repository.findById(id);
     }
 
-    public List<Prova> buscarPorProfessor(Long professorId) {
+    public List<Prova> buscarPorProfessor(Integer professorId) {
         return repository.findByProfessorId(professorId);
     }
 
@@ -31,11 +32,11 @@ public class ProvaService {
         return repository.save(prova);
     }
 
-    public void deletar(Long id) {
+    public void deletar(Integer id) {
         repository.deleteById(id);
     }
 
-    public boolean existePorId(Long id) {
+    public boolean existePorId(Integer id) {
         return repository.existsById(id);
     }
 }

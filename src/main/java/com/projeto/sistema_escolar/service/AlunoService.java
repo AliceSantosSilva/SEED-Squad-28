@@ -3,6 +3,7 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.Aluno;
 import com.projeto.sistema_escolar.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,11 +20,11 @@ public class AlunoService {
         return repository.findAll();
     }
 
-    public Optional<Aluno> buscarPorId(Long id) {
+    public Optional<Aluno> buscarPorId(Integer id) {
         return repository.findById(id);
     }
 
-    public Optional<Aluno> buscarPorUsuarioId(Long usuarioId) {
+    public Optional<Aluno> buscarPorUsuarioId(Integer usuarioId) {
         return repository.findByUsuarioId(usuarioId);
     }
 
@@ -31,11 +32,11 @@ public class AlunoService {
         return repository.save(aluno);
     }
 
-    public void deletar(Long id) {
+    public void deletar(Integer id) {
         repository.deleteById(id);
     }
 
-    public boolean existePorId(Long id) {
+    public boolean existePorId(Integer id) {
         return repository.existsById(id);
     }
 }

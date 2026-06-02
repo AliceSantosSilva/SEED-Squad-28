@@ -3,6 +3,7 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.Turma;
 import com.projeto.sistema_escolar.repository.TurmaRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public class TurmaService {
         return repository.findAll();
     }
 
-    public Optional<Turma> buscarPorId(Long id) {
+    public Optional<Turma> buscarPorId(Integer id) {
         return repository.findById(id);
     }
 
@@ -27,11 +28,11 @@ public class TurmaService {
         return repository.save(turma);
     }
 
-    public void deletar(Long id) {
+    public void deletar(Integer id) {
         repository.deleteById(id);
     }
 
-    public boolean existePorId(Long id) {
+    public boolean existePorId(Integer id) {
         return repository.existsById(id);
     }
 }

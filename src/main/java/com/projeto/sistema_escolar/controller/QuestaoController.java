@@ -1,16 +1,19 @@
 package com.projeto.sistema_escolar.controller;
 
 import com.projeto.sistema_escolar.model.Questao;
-import com.projeto.sistema_escolar.service.DisciplinaService;
 import com.projeto.sistema_escolar.service.QuestaoService;
+import com.projeto.sistema_escolar.service.DisciplinaService;
 import com.projeto.sistema_escolar.service.SerieService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/questoes")
-@CrossOrigin(origins = "*")
 public class QuestaoController {
 
     private final QuestaoService service;
@@ -31,32 +34,30 @@ public class QuestaoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Questao> buscarPorId(@PathVariable Long id) {
-        return service.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Questao> buscarPorId(@PathVariable Integer id) {
+        Optional<Questao> questao = service.buscarPorId(id);
+        return questao.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/disciplina/{disciplinaId}")
-    public List<Questao> buscarPorDisciplina(@PathVariable Long disciplinaId) {
+    public List<Questao> buscarPorDisciplina(@PathVariable Integer disciplinaId) {
         return service.buscarPorDisciplina(disciplinaId);
     }
 
     @GetMapping("/serie/{serieId}")
-    public List<Questao> buscarPorSerie(@PathVariable Long serieId) {
+    public List<Questao> buscarPorSerie(@PathVariable Integer serieId) {
         return service.buscarPorSerie(serieId);
     }
 
     @GetMapping("/filtro")
     public List<Questao> buscarPorDisciplinaESerie(
-            @RequestParam Long disciplinaId,
-            @RequestParam Long serieId) {
+            @RequestParam Integer disciplinaId,
+            @RequestParam Integer serieId) {
         return service.buscarPorDisciplinaESerie(disciplinaId, serieId);
     }
 
     @PostMapping
-    public ResponseEntity<Questao> criar(@RequestBody Questao questao) {
-        // Buscar disciplina e serie completas do banco antes de salvar
+    public ResponseEntity<Questao> criar(@Valid @RequestBody Questao questao) {
         if (questao.getDisciplina() != null && questao.getDisciplina().getId() != null) {
             disciplinaService.buscarPorId(questao.getDisciplina().getId())
                 .ifPresent(questao::setDisciplina);
@@ -65,24 +66,21 @@ public class QuestaoController {
             serieService.buscarPorId(questao.getSerie().getId())
                 .ifPresent(questao::setSerie);
         }
-        
         Questao saved = service.salvar(questao);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Questao> atualizar(@PathVariable Long id, @RequestBody Questao questaoAtualizada) {
+    public ResponseEntity<Questao> atualizar(@PathVariable Integer id, @Valid @RequestBody Questao questaoAtualizada) {
         return service.buscarPorId(id).map(questao -> {
             questao.setEnunciado(questaoAtualizada.getEnunciado());
             questao.setDificuldade(questaoAtualizada.getDificuldade());
             
-            // Garantir disciplina completa
             if (questaoAtualizada.getDisciplina() != null && questaoAtualizada.getDisciplina().getId() != null) {
                 disciplinaService.buscarPorId(questaoAtualizada.getDisciplina().getId())
                     .ifPresent(questao::setDisciplina);
             }
             
-            // Garantir serie completa
             if (questaoAtualizada.getSerie() != null && questaoAtualizada.getSerie().getId() != null) {
                 serieService.buscarPorId(questaoAtualizada.getSerie().getId())
                     .ifPresent(questao::setSerie);
@@ -93,7 +91,7 @@ public class QuestaoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         if (service.existePorId(id)) {
             service.deletar(id);
             return ResponseEntity.noContent().build();

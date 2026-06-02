@@ -2,13 +2,16 @@ package com.projeto.sistema_escolar.controller;
 
 import com.projeto.sistema_escolar.model.Alternativa;
 import com.projeto.sistema_escolar.service.AlternativaService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/alternativas")
-@CrossOrigin(origins = "*")
 public class AlternativaController {
 
     private final AlternativaService service;
@@ -23,24 +26,24 @@ public class AlternativaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Alternativa> buscarPorId(@PathVariable Long id) {
-        return service.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Alternativa> buscarPorId(@PathVariable Integer id) {
+        Optional<Alternativa> alternativa = service.buscarPorId(id);
+        return alternativa.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/questao/{questaoId}")
-    public List<Alternativa> buscarPorQuestao(@PathVariable Long questaoId) {
+    public List<Alternativa> buscarPorQuestao(@PathVariable Integer questaoId) {
         return service.buscarPorQuestao(questaoId);
     }
 
     @PostMapping
-    public Alternativa criar(@RequestBody Alternativa alternativa) {
-        return service.salvar(alternativa);
+    public ResponseEntity<Alternativa> criar(@Valid @RequestBody Alternativa alternativa) {
+        Alternativa saved = service.salvar(alternativa);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Alternativa> atualizar(@PathVariable Long id, @RequestBody Alternativa altAtualizada) {
+    public ResponseEntity<Alternativa> atualizar(@PathVariable Integer id, @Valid @RequestBody Alternativa altAtualizada) {
         return service.buscarPorId(id).map(alt -> {
             alt.setTexto(altAtualizada.getTexto());
             alt.setCorreta(altAtualizada.isCorreta());
@@ -50,7 +53,7 @@ public class AlternativaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         if (service.existePorId(id)) {
             service.deletar(id);
             return ResponseEntity.noContent().build();

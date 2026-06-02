@@ -2,13 +2,16 @@ package com.projeto.sistema_escolar.controller;
 
 import com.projeto.sistema_escolar.model.Coordenador;
 import com.projeto.sistema_escolar.service.CoordenadorService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/coordenadores")
-@CrossOrigin(origins = "*")
 public class CoordenadorController {
 
     private final CoordenadorService service;
@@ -23,28 +26,36 @@ public class CoordenadorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Coordenador> buscarPorId(@PathVariable Long id) {
-        return service.buscarPorId(id)
+    public ResponseEntity<Coordenador> buscarPorId(@PathVariable Integer id) {
+        Optional<Coordenador> coordenador = service.buscarPorId(id);
+        return coordenador.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<Coordenador> buscarPorUsuario(@PathVariable Integer usuarioId) {
+        return service.buscarPorUsuarioId(usuarioId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Coordenador criar(@RequestBody Coordenador coordenador) {
-        return service.salvar(coordenador);
+    public ResponseEntity<Coordenador> criar(@Valid @RequestBody Coordenador coordenador) {
+        Coordenador saved = service.salvar(coordenador);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Coordenador> atualizar(@PathVariable Long id, @RequestBody Coordenador coordAtualizado) {
+    public ResponseEntity<Coordenador> atualizar(@PathVariable Integer id, @Valid @RequestBody Coordenador coordAtualizado) {
         return service.buscarPorId(id).map(coord -> {
-            coord.setUsuario(coordAtualizado.getUsuario());
             coord.setArea(coordAtualizado.getArea());
+            coord.setEscola(coordAtualizado.getEscola());
+            coord.setUsuario(coordAtualizado.getUsuario());
             return ResponseEntity.ok(service.salvar(coord));
         }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         if (service.existePorId(id)) {
             service.deletar(id);
             return ResponseEntity.noContent().build();

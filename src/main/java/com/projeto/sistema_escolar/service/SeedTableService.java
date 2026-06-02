@@ -3,6 +3,7 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.SeedTable;
 import com.projeto.sistema_escolar.repository.SeedTableRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public class SeedTableService {
         return repository.findAll();
     }
 
-    public Optional<SeedTable> buscarPorId(Long id) {
+    public Optional<SeedTable> buscarPorId(Integer id) {
         return repository.findById(id);
     }
 
@@ -31,11 +32,11 @@ public class SeedTableService {
         return repository.save(seed);
     }
 
-    public void deletar(Long id) {
+    public void deletar(Integer id) {
         repository.deleteById(id);
     }
 
-    public boolean existePorId(Long id) {
+    public boolean existePorId(Integer id) {
         return repository.existsById(id);
     }
 }

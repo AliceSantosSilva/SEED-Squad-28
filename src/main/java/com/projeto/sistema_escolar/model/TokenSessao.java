@@ -9,9 +9,11 @@ public class TokenSessao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String token;
+    private LocalDateTime expiraEm;
+    private LocalDateTime criadoEm = LocalDateTime.now();
     private LocalDateTime dataExpiracao;
 
     @ManyToOne
@@ -19,11 +21,17 @@ public class TokenSessao {
     private Usuario usuario;
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public String getToken() { return token; }
     public void setToken(String token) { this.token = token; }
+
+    public LocalDateTime getExpiraEm() { return expiraEm; }
+    public void setExpiraEm(LocalDateTime expiraEm) { this.expiraEm = expiraEm; }
+
+    public LocalDateTime getCriadoEm() { return criadoEm; }
+    public void setCriadoEm(LocalDateTime criadoEm) { this.criadoEm = criadoEm; }
 
     public LocalDateTime getDataExpiracao() { return dataExpiracao; }
     public void setDataExpiracao(LocalDateTime dataExpiracao) { this.dataExpiracao = dataExpiracao; }
