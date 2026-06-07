@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trocar Senha | Prova Sergipe</title>
+
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+
+    <!-- Fonte -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS: o mesmo usado no login e cadastro -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+
+<body class="auth-body">
+
+    <div class="auth-container">
+        <div class="auth-card">
+
+            <!-- LADO ESQUERDO: formulário -->
+            <div class="auth-left">
+                <h1>Nova Senha</h1>
+
+                <p style="color: rgba(255,255,255,0.75); font-size: 13px; margin-bottom: 24px; text-align: center; line-height: 1.5;">
+                    Este é seu primeiro acesso.<br>
+                    Crie uma nova senha para continuar.
+                </p>
+
+                <form id="trocarSenhaForm">
+
+                    <div class="input-group">
+                        <input
+                            type="password"
+                            id="senhaAtual"
+                            placeholder="Senha atual (recebida por e-mail)"
+                            required
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <input
+                            type="password"
+                            id="novaSenha"
+                            placeholder="Nova senha (mínimo 6 caracteres)"
+                            required
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <input
+                            type="password"
+                            id="confirmarSenha"
+                            placeholder="Confirmar nova senha"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn-auth">
+                        Confirmar nova senha
+                    </button>
+
+                </form>
+
+                <p class="auth-link">
+                    <a href="/login.html">← Voltar ao login</a>
+                </p>
+            </div>
+
+            <!-- LADO DIREITO: logo e frase -->
+            <div class="auth-right">
+                <img src="/img/logo.jpeg" alt="Secretaria de Educação de Sergipe">
+                <h2>Onde tem estudo tem o<br>futuro se transformando</h2>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts: global.js SEMPRE antes do auth.js -->
+    <script src="/js/global.js" defer></script>
+    <script src="/js/auth.js" defer></script>
+
+</body>
+</html>

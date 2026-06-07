@@ -24,6 +24,11 @@ public class PerfilService {
         return repository.findById(id);
     }
 
+    // ← NOVO: busca por nome para o CadastroPublicoController
+    public Optional<Perfil> buscarPorNome(String nome) {
+        return repository.findByNome(nome);
+    }
+
     public Perfil salvar(Perfil perfil) {
         return repository.save(perfil);
     }

@@ -3,7 +3,6 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.Coordenador;
 import com.projeto.sistema_escolar.repository.CoordenadorRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +25,10 @@ public class CoordenadorService {
 
     public Optional<Coordenador> buscarPorUsuarioId(Integer usuarioId) {
         return repository.findByUsuarioId(usuarioId);
+    }
+
+    public List<Coordenador> listarPorEscola(Integer escolaId) {
+        return repository.findByEscolaId(escolaId);
     }
 
     public Coordenador salvar(Coordenador coordenador) {

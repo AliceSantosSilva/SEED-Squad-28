@@ -3,7 +3,6 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.Escola;
 import com.projeto.sistema_escolar.repository.EscolaRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 

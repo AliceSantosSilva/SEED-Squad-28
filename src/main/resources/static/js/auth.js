@@ -1,159 +1,207 @@
 /**
  * PROVA SERGIPE — auth.js
- * Autenticação real com backend Spring Security
+ * Lógica das telas de autenticação: login, cadastro, trocar senha.
+ * Depende de global.js (API_BASE, exibirAlerta, fetchAPI).
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('loginForm');
-    const cadastroForm = document.getElementById('cadastroForm');
+
+    const loginForm       = document.getElementById('loginForm');
+    const cadastroForm    = document.getElementById('cadastroForm');
     const trocarSenhaForm = document.getElementById('trocarSenhaForm');
-    
-    // ==================== LOGIN ====================
+
+    /* =============================================
+       LOGIN
+       ============================================= */
+
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
             const email = document.getElementById('email').value.trim();
             const senha = document.getElementById('password').value;
-            
+
             if (!email || !senha) {
-                exibirAlerta('Preencha todos os campos', 'erro');
+                exibirAlerta('Preencha todos os campos.', 'erro');
                 return;
             }
-            
+
+            const btnSubmit = loginForm.querySelector('button[type="submit"]');
+            btnSubmit.disabled    = true;
+            btnSubmit.textContent = 'Aguarde...';
+
             try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const response = await fetch(`${API_BASE}/api/login`, {
+                    method:      'POST',
+                    headers:     { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ email, senha })
+                    body:        JSON.stringify({ email, senha })
                 });
-                
+
                 const data = await response.json();
-                
-                if (response.status === 200 && data.sucesso) {
+
+                if (response.ok && data.sucesso) {
                     exibirAlerta(`Bem-vindo, ${data.nome}!`, 'sucesso');
-                    
-                    // Redirecionar baseado no perfil
-                    const perfil = data.perfil.toLowerCase();
-                    let destino = '/';
-                    if (perfil === 'admin') destino = '/admin/admin.html';
-                    else if (perfil === 'professor') destino = '/professor/professor.html';
-                    else if (perfil === 'aluno') destino = '/aluno/aluno.html';
-                    else if (perfil === 'coordenador') destino = '/coordenacao/coordenacao.html';
-                    
-                    setTimeout(() => { window.location.href = destino; }, 1000);
-                    
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 800);
+
                 } else if (response.status === 403 && data.senhaExpirada) {
-                    // Senha expirada - redirecionar para tela de troca de senha
-                    sessionStorage.setItem('email', email);
-                    sessionStorage.setItem('senhaAtual', senha);
+                    // Primeiro acesso — salva a senha temporária e redireciona
+                    sessionStorage.setItem('emailPrimeiroAcesso', email);
+                    sessionStorage.setItem('senhaPrimeiroAcesso', senha);
                     window.location.href = '/trocar-senha.html';
-                    
+
                 } else {
-                    exibirAlerta(data.mensagem || 'Credenciais inválidas', 'erro');
+                    exibirAlerta(data.mensagem || 'Credenciais inválidas.', 'erro');
                 }
-                
+
             } catch (error) {
                 console.error('Erro no login:', error);
-                exibirAlerta('Erro ao conectar ao servidor', 'erro');
+                exibirAlerta('Erro ao conectar ao servidor.', 'erro');
+            } finally {
+                btnSubmit.disabled    = false;
+                btnSubmit.textContent = 'Acessar';
             }
         });
     }
-    
-    // ==================== CADASTRO ====================
+
+    /* =============================================
+       CADASTRO
+       ============================================= */
+
     if (cadastroForm) {
         cadastroForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value.trim();
-            const senha = document.getElementById('password').value;
-            const confirm = document.getElementById('confirmPassword').value;
-            
-            if (!email || !senha || !confirm) {
-                exibirAlerta('Preencha todos os campos', 'erro');
+
+            const email        = document.getElementById('email').value.trim();
+            const senha        = document.getElementById('password').value;
+            const confirmSenha = document.getElementById('confirmPassword').value;
+
+            if (!email || !senha || !confirmSenha) {
+                exibirAlerta('Preencha todos os campos.', 'erro');
                 return;
             }
-            if (senha !== confirm) {
-                exibirAlerta('As senhas não coincidem', 'erro');
+
+            if (senha !== confirmSenha) {
+                exibirAlerta('As senhas não coincidem.', 'erro');
                 return;
             }
-            
+
+            if (senha.length < 6) {
+                exibirAlerta('A senha deve ter pelo menos 6 caracteres.', 'erro');
+                return;
+            }
+
+            const btnSubmit = cadastroForm.querySelector('button[type="submit"]');
+            btnSubmit.disabled    = true;
+            btnSubmit.textContent = 'Aguarde...';
+
             try {
-                const response = await fetch('/api/usuarios', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const response = await fetch(`${API_BASE}/api/cadastro`, {
+                    method:      'POST',
+                    headers:     { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({
-                        nome: email.split('@')[0],
-                        email: email,
-                        senha: senha,
-                        perfil: { id: 4 }, // ALUNO
-                        ativo: true
-                    })
+                    body:        JSON.stringify({ email, senha })
                 });
-                
+
+                const data = await response.json();
+
                 if (response.ok) {
-                    const data = await response.json();
-                    exibirAlerta('Cadastro realizado com sucesso! Faça login.', 'sucesso');
-                    setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+                    exibirAlerta('Cadastro realizado! Redirecionando...', 'sucesso');
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 1500);
                 } else {
-                    const error = await response.json();
-                    exibirAlerta(error.mensagem || 'Erro no cadastro', 'erro');
+                    exibirAlerta(data.mensagem || 'Erro ao realizar cadastro.', 'erro');
                 }
+
             } catch (error) {
                 console.error('Erro no cadastro:', error);
-                exibirAlerta('Erro ao conectar ao servidor', 'erro');
+                exibirAlerta('Erro ao conectar ao servidor.', 'erro');
+            } finally {
+                btnSubmit.disabled    = false;
+                btnSubmit.textContent = 'Cadastrar';
             }
         });
     }
-    
-    // ==================== TROCAR SENHA ====================
+
+    /* =============================================
+       TROCAR SENHA (primeiro acesso)
+       ============================================= */
+
     if (trocarSenhaForm) {
-        const emailSalvo = sessionStorage.getItem('email');
-        if (emailSalvo) {
-            const emailInput = document.getElementById('email');
-            if (emailInput) emailInput.value = emailSalvo;
+        // Preenche automaticamente a senha atual com o valor
+        // salvo no sessionStorage durante o redirecionamento do login
+        const senhaAtualInput = document.getElementById('senhaAtual');
+        const senhaGuardada   = sessionStorage.getItem('senhaPrimeiroAcesso');
+        if (senhaAtualInput && senhaGuardada) {
+            senhaAtualInput.value = senhaGuardada;
         }
-        
+
         trocarSenhaForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const novaSenha = document.getElementById('novaSenha').value;
-            const confirmSenha = document.getElementById('confirmNovaSenha').value;
-            
-            if (novaSenha !== confirmSenha) {
-                exibirAlerta('As senhas não coincidem', 'erro');
+
+            const senhaAtual    = document.getElementById('senhaAtual').value;
+            const novaSenha     = document.getElementById('novaSenha').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
+
+            if (!senhaAtual || !novaSenha || !confirmarSenha) {
+                exibirAlerta('Preencha todos os campos.', 'erro');
                 return;
             }
-            
+
+            if (novaSenha !== confirmarSenha) {
+                exibirAlerta('As novas senhas não coincidem.', 'erro');
+                return;
+            }
+
             if (novaSenha.length < 6) {
-                exibirAlerta('A senha deve ter pelo menos 6 caracteres', 'erro');
+                exibirAlerta('A nova senha deve ter pelo menos 6 caracteres.', 'erro');
                 return;
             }
-            
-            const senhaAtual = sessionStorage.getItem('senhaAtual');
-            
+
+            if (novaSenha === senhaAtual) {
+                exibirAlerta('A nova senha deve ser diferente da atual.', 'aviso');
+                return;
+            }
+
+            const btnSubmit = trocarSenhaForm.querySelector('button[type="submit"]');
+            btnSubmit.disabled    = true;
+            btnSubmit.textContent = 'Aguarde...';
+
             try {
-                const response = await fetch('/api/trocar-senha', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const response = await fetch(`${API_BASE}/api/trocar-senha`, {
+                    method:      'POST',
+                    headers:     { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({
-                        senhaAtual: senhaAtual,
-                        novaSenha: novaSenha
-                    })
+                    body:        JSON.stringify({ senhaAtual, novaSenha })
                 });
-                
+
+                const data = await response.json();
+
                 if (response.ok) {
-                    exibirAlerta('Senha alterada com sucesso! Faça login novamente.', 'sucesso');
-                    sessionStorage.clear();
-                    setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+                    // Limpa dados do primeiro acesso
+                    sessionStorage.removeItem('emailPrimeiroAcesso');
+                    sessionStorage.removeItem('senhaPrimeiroAcesso');
+
+                    exibirAlerta('Senha alterada com sucesso! Redirecionando...', 'sucesso');
+                    setTimeout(() => {
+                        window.location.href = data.redirect || '/login.html';
+                    }, 1200);
+
                 } else {
-                    const error = await response.json();
-                    exibirAlerta(error.erro || 'Erro ao trocar senha', 'erro');
+                    exibirAlerta(data.erro || 'Erro ao trocar a senha.', 'erro');
                 }
+
             } catch (error) {
                 console.error('Erro ao trocar senha:', error);
-                exibirAlerta('Erro ao conectar ao servidor', 'erro');
+                exibirAlerta('Erro ao conectar ao servidor.', 'erro');
+            } finally {
+                btnSubmit.disabled    = false;
+                btnSubmit.textContent = 'Confirmar nova senha';
             }
         });
     }
+
 });

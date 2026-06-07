@@ -1,6 +1,6 @@
 package com.projeto.sistema_escolar.dto;
 
-public class TrocarSenhaRequest {
+public class TrocarSenhaRequestDTO {
     private String senhaAtual;
     private String novaSenha;
 

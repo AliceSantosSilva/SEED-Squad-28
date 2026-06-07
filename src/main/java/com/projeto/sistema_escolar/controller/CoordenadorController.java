@@ -2,6 +2,8 @@ package com.projeto.sistema_escolar.controller;
 
 import com.projeto.sistema_escolar.model.Coordenador;
 import com.projeto.sistema_escolar.service.CoordenadorService;
+import com.projeto.sistema_escolar.service.EscolaService;
+import com.projeto.sistema_escolar.util.EscolaFiltroUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +17,21 @@ import java.util.Optional;
 public class CoordenadorController {
 
     private final CoordenadorService service;
+    private final EscolaService escolaService;
+    private final EscolaFiltroUtil filtroUtil;
 
-    public CoordenadorController(CoordenadorService service) {
+    public CoordenadorController(CoordenadorService service, EscolaService escolaService, EscolaFiltroUtil filtroUtil) {
         this.service = service;
+        this.escolaService = escolaService;
+        this.filtroUtil = filtroUtil;
     }
 
     @GetMapping
     public List<Coordenador> listar() {
+        Integer escolaId = filtroUtil.getEscolaIdDoUsuarioLogado();
+        if (escolaId != null) {
+            return service.listarPorEscola(escolaId);
+        }
         return service.listarTodos();
     }
 
@@ -40,18 +50,39 @@ public class CoordenadorController {
 
     @PostMapping
     public ResponseEntity<Coordenador> criar(@Valid @RequestBody Coordenador coordenador) {
+        Integer escolaId = filtroUtil.getEscolaIdDoUsuarioLogado();
+        if (escolaId != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (coordenador.getEscola() != null && coordenador.getEscola().getId() != null) {
+            escolaService.buscarPorId(coordenador.getEscola().getId())
+                .ifPresent(coordenador::setEscola);
+        }
         Coordenador saved = service.salvar(coordenador);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Coordenador> atualizar(@PathVariable Integer id, @Valid @RequestBody Coordenador coordAtualizado) {
-        return service.buscarPorId(id).map(coord -> {
-            coord.setArea(coordAtualizado.getArea());
+        Optional<Coordenador> coordOpt = service.buscarPorId(id);
+        if (coordOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        Coordenador coord = coordOpt.get();
+        coord.setArea(coordAtualizado.getArea());
+        
+        if (coordAtualizado.getEscola() != null && coordAtualizado.getEscola().getId() != null) {
+            Integer escolaId = filtroUtil.getEscolaIdDoUsuarioLogado();
+            if (escolaId != null && !coordAtualizado.getEscola().getId().equals(escolaId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
             coord.setEscola(coordAtualizado.getEscola());
-            coord.setUsuario(coordAtualizado.getUsuario());
-            return ResponseEntity.ok(service.salvar(coord));
-        }).orElse(ResponseEntity.notFound().build());
+        }
+        coord.setUsuario(coordAtualizado.getUsuario());
+        
+        Coordenador saved = service.salvar(coord);
+        return ResponseEntity.ok(saved);
     }
 
     @DeleteMapping("/{id}")

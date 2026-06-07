@@ -1,11 +1,11 @@
 package com.projeto.sistema_escolar.controller;
 
-import com.projeto.sistema_escolar.model.Turma;
 import com.projeto.sistema_escolar.model.Escola;
-import com.projeto.sistema_escolar.model.Serie;
-import com.projeto.sistema_escolar.service.TurmaService;
+import com.projeto.sistema_escolar.model.Turma;
 import com.projeto.sistema_escolar.service.EscolaService;
 import com.projeto.sistema_escolar.service.SerieService;
+import com.projeto.sistema_escolar.service.TurmaService;
+import com.projeto.sistema_escolar.util.EscolaFiltroUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +21,21 @@ public class TurmaController {
     private final TurmaService service;
     private final EscolaService escolaService;
     private final SerieService serieService;
+    private final EscolaFiltroUtil filtroUtil;
 
-    public TurmaController(TurmaService service, EscolaService escolaService, SerieService serieService) {
+    public TurmaController(TurmaService service, EscolaService escolaService, SerieService serieService, EscolaFiltroUtil filtroUtil) {
         this.service = service;
         this.escolaService = escolaService;
         this.serieService = serieService;
+        this.filtroUtil = filtroUtil;
     }
 
     @GetMapping
     public List<Turma> listar() {
+        Integer escolaId = filtroUtil.getEscolaIdDoUsuarioLogado();
+        if (escolaId != null) {
+            return service.listarPorEscola(escolaId);
+        }
         return service.listarTodos();
     }
 
@@ -41,9 +47,11 @@ public class TurmaController {
 
     @PostMapping
     public ResponseEntity<Turma> criar(@Valid @RequestBody Turma turma) {
-        if (turma.getEscola() != null && turma.getEscola().getId() != null) {
-            escolaService.buscarPorId(turma.getEscola().getId())
-                .ifPresent(turma::setEscola);
+        Integer escolaId = filtroUtil.getEscolaIdDoUsuarioLogado();
+        if (escolaId != null) {
+            Escola escola = escolaService.buscarPorId(escolaId)
+                    .orElseThrow(() -> new RuntimeException("Escola não encontrada"));
+            turma.setEscola(escola);
         }
         if (turma.getSerie() != null && turma.getSerie().getId() != null) {
             serieService.buscarPorId(turma.getSerie().getId())
@@ -55,22 +63,30 @@ public class TurmaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Turma> atualizar(@PathVariable Integer id, @Valid @RequestBody Turma turmaAtualizada) {
-        return service.buscarPorId(id).map(turma -> {
-            turma.setNome(turmaAtualizada.getNome());
-            turma.setAno(turmaAtualizada.getAno());
-            
-            if (turmaAtualizada.getEscola() != null && turmaAtualizada.getEscola().getId() != null) {
-                escolaService.buscarPorId(turmaAtualizada.getEscola().getId())
-                    .ifPresent(turma::setEscola);
+        Optional<Turma> turmaOpt = service.buscarPorId(id);
+        if (turmaOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        Turma turma = turmaOpt.get();
+        turma.setNome(turmaAtualizada.getNome());
+        turma.setAno(turmaAtualizada.getAno());
+        
+        if (turmaAtualizada.getSerie() != null && turmaAtualizada.getSerie().getId() != null) {
+            serieService.buscarPorId(turmaAtualizada.getSerie().getId())
+                .ifPresent(turma::setSerie);
+        }
+        
+        if (turmaAtualizada.getEscola() != null && turmaAtualizada.getEscola().getId() != null) {
+            Integer escolaId = filtroUtil.getEscolaIdDoUsuarioLogado();
+            if (escolaId != null && !turmaAtualizada.getEscola().getId().equals(escolaId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
-            
-            if (turmaAtualizada.getSerie() != null && turmaAtualizada.getSerie().getId() != null) {
-                serieService.buscarPorId(turmaAtualizada.getSerie().getId())
-                    .ifPresent(turma::setSerie);
-            }
-            
-            return ResponseEntity.ok(service.salvar(turma));
-        }).orElse(ResponseEntity.notFound().build());
+            turma.setEscola(turmaAtualizada.getEscola());
+        }
+        
+        Turma saved = service.salvar(turma);
+        return ResponseEntity.ok(saved);
     }
 
     @DeleteMapping("/{id}")

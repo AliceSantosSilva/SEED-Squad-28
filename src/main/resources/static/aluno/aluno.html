@@ -9,8 +9,8 @@
     <!-- Fonte Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <!-- CSS: global primeiro, depois específico do aluno -->
-    <link rel="stylesheet" href="/src/main/resources/static/css/global.css">
-    <link rel="stylesheet" href="/src/main/resources/static/aluno/aluno.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/aluno/aluno.css">
 </head>
 <body>
     <div class="app">
@@ -139,7 +139,7 @@
                                     <h2><i class='bx bx-list-check'></i> Próximas Provas</h2>
                                     <a href="#" class="link view-all-link" data-page="minhas-provas">Ver todas <i class='bx bx-right-arrow-alt'></i></a>
                                 </div>
-                                <div class="exams-list">
+                                <div class="exams-list" id="exams-list-dashboard">
                                     <div class="exam-item">
                                         <div class="exam-info">
                                             <div class="exam-name">Matemática - Prova Bimestral</div>
@@ -170,7 +170,7 @@
                                     <h2><i class='bx bx-bar-chart-alt-2'></i> Resultados Recentes</h2>
                                     <a href="#" class="link view-all-link" data-page="resultados">Ver todas <i class='bx bx-right-arrow-alt'></i></a>
                                 </div>
-                                <div class="results-list">
+                                <div class="results-list" id="results-list-dashboard">
                                     <div class="result-item">
                                         <div class="result-info">
                                             <div class="result-name">Matemática - Prova Parcial</div>
@@ -244,7 +244,7 @@
     </div><!-- /.app -->
 
     <!-- Scripts: global primeiro, depois específico do aluno -->
-    <script src="/src/main/resources/static/js/global.js" defer></script>
-    <script src="/src/main/resources/static/aluno/aluno.js" defer></script>
+    <script src="/js/global.js" defer></script>
+    <script src="/aluno/aluno.js" defer></script>
 </body>
 </html>

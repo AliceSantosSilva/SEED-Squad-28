@@ -39,4 +39,8 @@ public class AlternativaService {
     public boolean existePorId(Integer id) {
         return repository.existsById(id);
     }
+
+    public Optional<Alternativa> buscarCorretaPorQuestao(Integer questaoId) {
+        return repository.findByQuestaoIdAndCorretaTrue(questaoId);
+    }
 }

@@ -32,7 +32,7 @@ public class Prova {
     @JoinColumn(name = "turma_id")
     private Turma turma;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "prova_questoes",
         joinColumns = @JoinColumn(name = "prova_id"),

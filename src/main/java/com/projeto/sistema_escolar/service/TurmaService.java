@@ -3,7 +3,6 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.Turma;
 import com.projeto.sistema_escolar.repository.TurmaRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +23,10 @@ public class TurmaService {
         return repository.findById(id);
     }
 
+    public List<Turma> listarPorEscola(Integer escolaId) {
+        return repository.findByEscolaId(escolaId);
+    }
+
     public Turma salvar(Turma turma) {
         return repository.save(turma);
     }
@@ -34,5 +37,9 @@ public class TurmaService {
 
     public boolean existePorId(Integer id) {
         return repository.existsById(id);
+    }
+
+    public List<Turma> buscarTurmasPorProfessor(Integer professorId) {
+        return repository.findTurmasByProfessorId(professorId);
     }
 }

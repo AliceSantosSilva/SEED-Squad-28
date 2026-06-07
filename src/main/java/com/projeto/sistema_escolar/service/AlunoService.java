@@ -3,7 +3,6 @@ package com.projeto.sistema_escolar.service;
 import com.projeto.sistema_escolar.model.Aluno;
 import com.projeto.sistema_escolar.repository.AlunoRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +25,10 @@ public class AlunoService {
 
     public Optional<Aluno> buscarPorUsuarioId(Integer usuarioId) {
         return repository.findByUsuarioId(usuarioId);
+    }
+
+    public List<Aluno> listarPorEscola(Integer escolaId) {
+        return repository.findByTurma_EscolaId(escolaId);
     }
 
     public Aluno salvar(Aluno aluno) {

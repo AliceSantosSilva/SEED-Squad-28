@@ -1,51 +1,213 @@
 /**
  * PROVA SERGIPE — aluno.js
  * Lógica específica do perfil Aluno.
- * Depende de: global.js (carregado antes via defer).
  */
 
 'use strict';
 
-// ─── Dados de eventos do calendário ───────────────────────────────────────────
+// ── Calendário ────────────────────────────────────────────────────────────────
+
 const eventsData = [
-    { date: "2026-04-15", type: "exam",     title: "Matemática - Prova Bimestral" },
-    { date: "2026-04-18", type: "exam",     title: "Português - Avaliação"         },
-    { date: "2026-04-22", type: "exam",     title: "História - Prova"              },
-    { date: "2026-04-10", type: "deadline", title: "Entrega de Trabalho"           },
-    { date: "2026-04-20", type: "deadline", title: "Prazo de Inscrição"            },
-    { date: "2026-04-25", type: "meeting",  title: "Reunião de Pais"               }
+    { date: "2026-06-05", type: "exam",     title: "Matemática - Prova Bimestral" },
+    { date: "2026-06-10", type: "exam",     title: "Português - Avaliação" },
+    { date: "2026-06-15", type: "deadline", title: "Entrega de Trabalho" },
+    { date: "2026-06-20", type: "meeting",  title: "Reunião de Pais" }
 ];
 
 let currentCalendarDate = new Date();
 
 function initCalendar() {
-
-    renderCalendar(
-        'calendarContainer',
-        currentCalendarDate,
-        eventsData,
-        (date, events) => {
-
-            if (!events.length) {
-                exibirAlerta('Sem eventos nesta data.', 'info');
-                return;
-            }
-
-            exibirAlerta(
-                events.map(e => e.title).join(' • '),
-                'info'
-            );
+    renderCalendar('calendarContainer', currentCalendarDate, eventsData, (date, events) => {
+        if (!events.length) {
+            exibirAlerta('Sem eventos nesta data.', 'info');
+            return;
         }
-    );
-
+        exibirAlerta(events.map(e => e.title).join(' • '), 'info');
+    });
     const container = document.getElementById('calendarContainer');
-
     container?.addEventListener('calendarChange', (e) => {
         currentCalendarDate = e.detail.date;
     });
 }
 
-// ─── Troca de páginas ─────────────────────────────────────────────────────────
+// ── Stat-cards (dados reais) ──────────────────────────────────────────────────
+
+async function carregarDashboard() {
+    try {
+        const data = await fetchAPI('/api/aluno/dashboard');
+
+        document.querySelector('.stat-card.primary .stat-value').textContent =
+            data.provasPendentes;
+
+        document.querySelector('.stat-card.success .stat-value').textContent =
+            data.provasRealizadas;
+
+        document.querySelector('.stat-card.warning .stat-value').textContent =
+            data.mediaGeral.toFixed(1);
+
+        document.querySelector('.stat-card.info .stat-value2').textContent =
+            data.totalProvas;
+
+    } catch (_) {
+        exibirAlerta('Erro ao carregar estatísticas.', 'erro');
+    }
+}
+
+// ── Provas pendentes (dados reais) ────────────────────────────────────────────
+
+async function carregarProvasPendentes() {
+    const container = document.getElementById('exams-list-dashboard');
+    if (!container) return;
+
+    try {
+        const provas = await fetchAPI('/api/aluno/provas/pendentes');
+
+        if (!provas.length) {
+            container.innerHTML = '<p style="color:#64748b;font-size:12px;padding:8px;">Nenhuma prova pendente.</p>';
+            return;
+        }
+
+        container.innerHTML = provas.map(p => `
+            <div class="exam-item">
+                <div class="exam-info">
+                    <div class="exam-name">${p.titulo}</div>
+                    <div class="exam-date">
+                        <i class='bx bx-calendar'></i>
+                        ${p.dataInicio ? new Date(p.dataInicio).toLocaleDateString('pt-BR') : 'Sem data'}
+                    </div>
+                </div>
+                <button class="btn-start" data-prova-id="${p.id}">
+                    Iniciar Prova <i class='bx bx-play'></i>
+                </button>
+            </div>
+        `).join('');
+
+        // Botões de iniciar prova
+        container.querySelectorAll('.btn-start').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const provaId = btn.getAttribute('data-prova-id');
+                exibirAlerta('Tela de prova em desenvolvimento.', 'aviso');
+                // Futuramente: window.location.href = `/prova.html?id=${provaId}`;
+            });
+        });
+
+    } catch (_) {
+        container.innerHTML = '<p style="color:#e74c3c;font-size:12px;padding:8px;">Erro ao carregar provas.</p>';
+    }
+}
+
+// ── Resultados recentes (dados reais) ─────────────────────────────────────────
+
+async function carregarResultados() {
+    const container = document.getElementById('results-list-dashboard');
+    if (!container) return;
+
+    try {
+        const resultados = await fetchAPI('/api/aluno/provas/realizadas');
+
+        if (!resultados.length) {
+            container.innerHTML = '<p style="color:#64748b;font-size:12px;padding:8px;">Nenhuma prova realizada ainda.</p>';
+            return;
+        }
+
+        container.innerHTML = resultados.map(r => {
+            const classe = r.nota >= 7 ? 'good' : r.nota >= 5 ? 'average' : 'bad';
+            const data   = r.dataRealizado
+                ? new Date(r.dataRealizado).toLocaleDateString('pt-BR')
+                : '—';
+            return `
+                <div class="result-item">
+                    <div class="result-info">
+                        <div class="result-name">${r.tituloProva}</div>
+                        <div class="result-date">${data}</div>
+                    </div>
+                    <div class="result-grade ${classe}">${r.nota.toFixed(1)}</div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (_) {
+        container.innerHTML = '<p style="color:#e74c3c;font-size:12px;padding:8px;">Erro ao carregar resultados.</p>';
+    }
+}
+
+// ── Página Minhas Provas (dados reais) ────────────────────────────────────────
+
+async function fillFullExams() {
+    const container = document.getElementById('allExamsList');
+    if (!container) return;
+
+    try {
+        const provas = await fetchAPI('/api/aluno/provas/pendentes');
+
+        if (!provas.length) {
+            container.innerHTML = '<p style="color:#64748b;padding:16px;">Nenhuma prova disponível.</p>';
+            return;
+        }
+
+        container.innerHTML = provas.map(p => `
+            <div class="exam-item">
+                <div class="exam-info">
+                    <div class="exam-name">${p.titulo}</div>
+                    <div class="exam-date">
+                        <i class='bx bx-calendar'></i>
+                        ${p.dataInicio ? new Date(p.dataInicio).toLocaleDateString('pt-BR') : 'Sem data'}
+                    </div>
+                </div>
+                <button class="btn-start" data-prova-id="${p.id}">
+                    Iniciar <i class='bx bx-play'></i>
+                </button>
+            </div>
+        `).join('');
+
+        container.querySelectorAll('.btn-start').forEach(btn => {
+            btn.addEventListener('click', () => {
+                exibirAlerta('Tela de prova em desenvolvimento.', 'aviso');
+            });
+        });
+
+    } catch (_) {
+        container.innerHTML = '<p style="color:#e74c3c;padding:16px;">Erro ao carregar provas.</p>';
+    }
+}
+
+// ── Página Resultados (dados reais) ───────────────────────────────────────────
+
+async function fillFullResults() {
+    const container = document.getElementById('allResultsList');
+    if (!container) return;
+
+    try {
+        const resultados = await fetchAPI('/api/aluno/provas/realizadas');
+
+        if (!resultados.length) {
+            container.innerHTML = '<p style="color:#64748b;padding:16px;">Nenhum resultado disponível.</p>';
+            return;
+        }
+
+        container.innerHTML = resultados.map(r => {
+            const classe = r.nota >= 7 ? 'good' : r.nota >= 5 ? 'average' : 'bad';
+            const data   = r.dataRealizado
+                ? new Date(r.dataRealizado).toLocaleDateString('pt-BR')
+                : '—';
+            return `
+                <div class="result-item">
+                    <div class="result-info">
+                        <div class="result-name">${r.tituloProva}</div>
+                        <div class="result-date">${data}</div>
+                    </div>
+                    <div class="result-grade ${classe}">${r.nota.toFixed(1)}</div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (_) {
+        container.innerHTML = '<p style="color:#e74c3c;padding:16px;">Erro ao carregar resultados.</p>';
+    }
+}
+
+// ── Navegação entre páginas ───────────────────────────────────────────────────
+
 function setupPages() {
     const navLinks = document.querySelectorAll('.nav-item[data-page]');
     const pages    = ['dashboard', 'minhas-provas', 'resultados', 'calendario', 'configuracoes'];
@@ -55,135 +217,53 @@ function setupPages() {
             e.preventDefault();
             const pageId = link.getAttribute('data-page');
 
-            // Ativa link clicado
             navLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
 
-            // Esconde todas as páginas e exibe a alvo
             pages.forEach(p => {
                 const el = document.getElementById(`${p}-page`);
                 if (el) el.style.display = 'none';
             });
+
             const activePage = document.getElementById(`${pageId}-page`);
             if (activePage) activePage.style.display = 'block';
+
+            // Carrega dados ao navegar
+            if (pageId === 'minhas-provas') fillFullExams();
+            if (pageId === 'resultados')    fillFullResults();
         });
     });
 
-    // Botões "Ver todas" acionam a navegação correspondente
     document.querySelectorAll('.view-all-link').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             const target = btn.getAttribute('data-page');
-            if (target) {
-                document.querySelector(`.nav-item[data-page="${target}"]`)?.click();
-            }
+            if (target) document.querySelector(`.nav-item[data-page="${target}"]`)?.click();
         });
     });
 }
 
-// ─── Listas completas ─────────────────────────────────────────────────────────
-function fillFullExams() {
-    // Substituir futuramente por: fetchAPI('/api/aluno/provas', ...)
-    const examsFull = [
-        { name: "Matemática - Prova Bimestral", date: "15/04/2026 08:00", status: "pendente"  },
-        { name: "Português - Avaliação",         date: "18/04/2026 10:00", status: "pendente"  },
-        { name: "História - Prova",              date: "22/04/2026 14:00", status: "pendente"  },
-        { name: "Geografia - Final",             date: "10/03/2026",       status: "realizada", grade: "8.5" },
-        { name: "Ciências - Prova",              date: "05/03/2026",       status: "realizada", grade: "7.8" }
-    ];
-
-    const container = document.getElementById('allExamsList');
-    if (!container) return;
-
-    container.innerHTML = examsFull.map(ex => `
-        <div class="exam-item" style="justify-content:space-between;">
-            <div>
-                <strong>${ex.name}</strong><br>
-                <span style="font-size:12px;">${ex.date}</span>
-            </div>
-            ${ex.status === 'pendente'
-                ? '<button class="btn-start">Iniciar</button>'
-                : `<span class="result-grade good">Nota: ${ex.grade}</span>`
-            }
-        </div>
-    `).join('');
-}
-
-function fillFullResults() {
-    // Substituir futuramente por: fetchAPI('/api/aluno/resultados', ...)
-    const allResults = [
-        { name: "Matemática Parcial",   date: "15/03/2026", grade: 8.5 },
-        { name: "Português Redação",    date: "10/03/2026", grade: 9.0 },
-        { name: "História Trabalho",    date: "05/03/2026", grade: 7.5 },
-        { name: "Física - Laboratório", date: "25/02/2026", grade: 9.2 }
-    ];
-
-    const container = document.getElementById('allResultsList');
-    if (!container) return;
-
-    container.innerHTML = allResults.map(r => `
-        <div class="result-item" style="justify-content:space-between;">
-            <div>
-                <strong>${r.name}</strong><br>
-                <span>${r.date}</span>
-            </div>
-            <div class="result-grade good">${r.grade}</div>
-        </div>
-    `).join('');
-}
-
-// ─── Menu mobile ──────────────────────────────────────────────────────────────
-function mobileMenu() {
-    const btn     = document.getElementById('menuBtn');
-    const sidebar = document.querySelector('.sidebar');
-    btn?.addEventListener('click', () => sidebar.classList.toggle('open'));
-    document.addEventListener('click', (e) => {
-        if (sidebar?.classList.contains('open') && !sidebar.contains(e.target) && !btn?.contains(e.target)) {
-            sidebar.classList.remove('open');
-        }
-    });
-}
-
-// ─── Botões "Iniciar prova" ────────────────────────────────────────────────────
-function initExamButtons() {
-    document.querySelectorAll('.btn-start').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            // Usa exibirAlerta do global.js se disponível, senão alert nativo
-            if (typeof exibirAlerta === 'function') {
-                exibirAlerta('🚀 Iniciando prova. Função em desenvolvimento.', 'aviso');
-            } else {
-                alert('🚀 Iniciando simulado/prova. Função em desenvolvimento.');
-            }
-        });
-    });
-}
-
-
-// ─── Logout ───────────────────────────────────────────────────────────────────
 function initLogout() {
-    document.getElementById('logout')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (confirm('Deseja sair da sua conta?')) {
-            // Usa logout() do global.js se disponível
-            if (typeof logout === 'function') {
-                logout();
-            } else {
-                alert('Até logo, João!');
-            }
-        }
+    const logoutBtn = document.getElementById('logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Deseja sair da sua conta?')) logout();
+        });
+    }
+}
+
+// ── Inicialização ─────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+    verificarSessao((usuario) => {
+        preencherHeaderUsuario(usuario);
+        inicializarMenuMobile();
+        initCalendar();
+        carregarDashboard();
+        carregarProvasPendentes();
+        carregarResultados();
+        setupPages();
+        initLogout();
     });
-}
-
-// ─── Inicialização ────────────────────────────────────────────────────────────
-function init() {
-    initCalendar();
-    setupPages();
-    fillFullExams();
-    fillFullResults();
-    mobileMenu();
-    initExamButtons();
-    initLogout();
-}
-
-init();
+});

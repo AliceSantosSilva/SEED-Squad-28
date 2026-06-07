@@ -1,6 +1,6 @@
 package com.projeto.sistema_escolar.dto;
 
-public class LoginRequest {
+public class LoginRequestDTO {
     private String email;
     private String senha;
 
