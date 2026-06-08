@@ -9,12 +9,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final JwtFilter jwtFilter;
+
+    public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -22,28 +27,26 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityContextRepository securityContextRepository() {
-        return new HttpSessionSecurityContextRepository();
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+
+            // JWT é stateless — sem sessão HTTP
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
 
             .authorizeHttpRequests(auth -> auth
 
                 // Recursos estáticos públicos
                 .requestMatchers(
-                    "/css/**", "/js/**", "/img/**",
-                    "/favicon.ico"
+                    "/css/**", "/js/**", "/img/**", "/favicon.ico"
                 ).permitAll()
 
                 // Páginas públicas de autenticação
                 .requestMatchers(
                     "/", "/index.html",
-                    "/login.html", "/cadastro.html",
-                    "/trocar-senha.html"
+                    "/login.html", "/cadastro.html", "/trocar-senha.html"
                 ).permitAll()
 
                 // APIs públicas
@@ -51,10 +54,17 @@ public class SecurityConfig {
                     "/api/login",
                     "/api/logout",
                     "/api/cadastro",
-                    "/api/trocar-senha"   // ← ESSENCIAL: permite trocar senha no primeiro acesso
+                    "/api/trocar-senha"
                 ).permitAll()
 
-                // Páginas protegidas por perfil
+                // Swagger — público para facilitar apresentação ao cliente
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**"
+                ).permitAll()
+
+                // Páginas protegidas por perfil (HTML estático)
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/professor/**").hasRole("PROFESSOR")
                 .requestMatchers("/aluno/**").hasRole("ALUNO")
@@ -91,39 +101,34 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .sessionFixation().migrateSession()
-                .maximumSessions(1)
-                    .maxSessionsPreventsLogin(false)
-            )
-
+            // Respostas de erro em JSON para chamadas à API
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((request, response, authException) -> {
-                    String uri = request.getRequestURI();
-                    if (uri.startsWith("/api/")) {
+                .authenticationEntryPoint((request, response, e) -> {
+                    if (request.getRequestURI().startsWith("/api/")) {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType("application/json;charset=UTF-8");
                         response.getWriter()
-                            .write("{\"erro\": \"Não autenticado\", \"redirect\": \"/login.html\"}");
+                            .write("{\"erro\":\"Não autenticado\",\"redirect\":\"/login.html\"}");
                     } else {
                         response.sendRedirect("/login.html");
                     }
                 })
-                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    String uri = request.getRequestURI();
-                    if (uri.startsWith("/api/")) {
+                .accessDeniedHandler((request, response, e) -> {
+                    if (request.getRequestURI().startsWith("/api/")) {
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                         response.setContentType("application/json;charset=UTF-8");
-                        response.getWriter().write("{\"erro\": \"Acesso negado\"}");
+                        response.getWriter().write("{\"erro\":\"Acesso negado\"}");
                     } else {
                         response.sendRedirect("/login.html?erro=acesso-negado");
                     }
                 })
             )
 
-            .httpBasic(httpBasic -> httpBasic.disable())
-            .formLogin(form -> form.disable());
+            // Registra o filtro JWT antes do filtro de autenticação padrão do Spring
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+
+            .httpBasic(h -> h.disable())
+            .formLogin(f -> f.disable());
 
         return http.build();
     }

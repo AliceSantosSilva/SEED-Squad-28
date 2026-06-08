@@ -12,10 +12,10 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UsuarioRepository repository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder   passwordEncoder;
 
     public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
-        this.repository = repository;
+        this.repository      = repository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -31,10 +31,16 @@ public class UsuarioService {
         return repository.findByEmail(email);
     }
 
+    /**
+     * Salva o usuário.
+     * A senha só é criptografada se ainda não estiver no formato BCrypt
+     * (evita double-encode quando o controller atualiza outros campos
+     * sem alterar a senha).
+     */
     public Usuario salvar(Usuario usuario) {
-        if (usuario.getSenha() != null && !usuario.getSenha().isEmpty()) {
-            String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
-            usuario.setSenha(senhaCriptografada);
+        String senha = usuario.getSenha();
+        if (senha != null && !senha.isEmpty() && !isBcrypt(senha)) {
+            usuario.setSenha(passwordEncoder.encode(senha));
         }
         return repository.save(usuario);
     }
@@ -45,5 +51,12 @@ public class UsuarioService {
 
     public boolean existePorId(Integer id) {
         return repository.existsById(id);
+    }
+
+    /** BCrypt sempre começa com $2a$, $2b$ ou $2y$ */
+    private boolean isBcrypt(String senha) {
+        return senha.startsWith("$2a$")
+            || senha.startsWith("$2b$")
+            || senha.startsWith("$2y$");
     }
 }
