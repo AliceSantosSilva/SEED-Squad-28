@@ -38,12 +38,14 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // Recursos estáticos públicos
+                // Recursos estáticos — TODOS públicos
                 .requestMatchers(
-                    "/css/**", "/js/**", "/img/**", "/favicon.ico"
+                    "/css/**", "/js/**", "/img/**", "/favicon.ico",
+                    "/admin/**", "/professor/**", "/aluno/**",
+                    "/coordenacao/**", "/aluno/**"
                 ).permitAll()
 
-                // Páginas públicas de autenticação
+                // Páginas HTML públicas
                 .requestMatchers(
                     "/", "/index.html",
                     "/login.html", "/cadastro.html", "/trocar-senha.html"
@@ -57,18 +59,12 @@ public class SecurityConfig {
                     "/api/trocar-senha"
                 ).permitAll()
 
-                // Swagger — público para facilitar apresentação ao cliente
+                // Swagger público
                 .requestMatchers(
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/v3/api-docs/**"
                 ).permitAll()
-
-                // Páginas protegidas por perfil (HTML estático)
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/professor/**").hasRole("PROFESSOR")
-                .requestMatchers("/aluno/**").hasRole("ALUNO")
-                .requestMatchers("/coordenacao/**").hasRole("COORDENADOR")
 
                 // APIs protegidas por perfil
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
@@ -77,56 +73,26 @@ public class SecurityConfig {
                 .requestMatchers("/api/coordenador/**").hasRole("COORDENADOR")
                 .requestMatchers("/api/coordenacao/**").hasRole("COORDENADOR")
 
-                // Aplicação de prova — qualquer autenticado
-                .requestMatchers("/api/aplicacao/**").authenticated()
-
-                // APIs gerais autenticadas
-                .requestMatchers(
-                    "/api/usuario/logado",
-                    "/api/usuarios/**",
-                    "/api/perfis/**",
-                    "/api/escolas/**",
-                    "/api/turmas/**",
-                    "/api/disciplinas/**",
-                    "/api/series/**",
-                    "/api/questoes/**",
-                    "/api/alternativas/**",
-                    "/api/provas/**",
-                    "/api/respostas/**",
-                    "/api/alunos/**",
-                    "/api/professores/**",
-                    "/api/coordenadores/**"
-                ).authenticated()
-
+                // Qualquer outra API precisa de autenticação
                 .anyRequest().authenticated()
             )
 
-            // Respostas de erro em JSON para chamadas à API
+            // Erros retornam JSON para APIs, sem redirecionar para HTML
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, e) -> {
-                    if (request.getRequestURI().startsWith("/api/")) {
-                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                        response.setContentType("application/json;charset=UTF-8");
-                        response.getWriter()
-                            .write("{\"erro\":\"Não autenticado\",\"redirect\":\"/login.html\"}");
-                    } else {
-                        response.sendRedirect("/login.html");
-                    }
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter()
+                        .write("{\"erro\":\"Não autenticado\",\"redirect\":\"/login.html\"}");
                 })
                 .accessDeniedHandler((request, response, e) -> {
-                    if (request.getRequestURI().startsWith("/api/")) {
-                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                        response.setContentType("application/json;charset=UTF-8");
-                        response.getWriter().write("{\"erro\":\"Acesso negado\"}");
-                    } else {
-                        response.sendRedirect("/login.html?erro=acesso-negado");
-                    }
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"erro\":\"Acesso negado\"}");
                 })
             )
 
-            // Registra o filtro JWT antes do filtro de autenticação padrão do Spring
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-
             .httpBasic(h -> h.disable())
             .formLogin(f -> f.disable());
 
