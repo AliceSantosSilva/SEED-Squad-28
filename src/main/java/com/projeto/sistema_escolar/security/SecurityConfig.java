@@ -38,11 +38,10 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // Recursos estáticos — TODOS públicos
+                // Recursos estáticos — TODOS públicos (incluindo favicon)
                 .requestMatchers(
                     "/css/**", "/js/**", "/img/**", "/favicon.ico",
-                    "/admin/**", "/professor/**", "/aluno/**",
-                    "/coordenacao/**", "/aluno/**"
+                    "/admin/**", "/professor/**", "/aluno/**", "/coordenacao/**"
                 ).permitAll()
 
                 // Páginas HTML públicas
@@ -80,10 +79,16 @@ public class SecurityConfig {
             // Erros retornam JSON para APIs, sem redirecionar para HTML
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, e) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json;charset=UTF-8");
-                    response.getWriter()
-                        .write("{\"erro\":\"Não autenticado\",\"redirect\":\"/login.html\"}");
+                    // Se for requisição de página HTML, redireciona para login
+                    String accept = request.getHeader("Accept");
+                    if (accept != null && accept.contains("text/html")) {
+                        response.sendRedirect("/login.html");
+                    } else {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json;charset=UTF-8");
+                        response.getWriter()
+                            .write("{\"erro\":\"Não autenticado\",\"redirect\":\"/login.html\"}");
+                    }
                 })
                 .accessDeniedHandler((request, response, e) -> {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);

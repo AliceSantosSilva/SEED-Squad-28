@@ -1,7 +1,6 @@
 /**
  * PROVA SERGIPE — admin.js
- * Lógica do painel administrativo.
- * Depende de: global.js (carregado antes via defer).
+ * Lógica do painel administrativo (compatível com JWT)
  */
 
 'use strict';
@@ -29,6 +28,37 @@ function inicializarCalendario() {
     });
     document.getElementById('admin-calendar')
         ?.addEventListener('calendarChange', (e) => { adminCalendarDate = e.detail.date; });
+}
+
+/* =============================================
+   FUNÇÃO fetchAPI COM TOKEN JWT
+============================================= */
+
+async function fetchAPI(url, options = {}) {
+    const token = localStorage.getItem('authToken');
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, {
+        ...options,
+        headers
+    });
+
+    if (response.status === 401) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('usuarioPerfil');
+        localStorage.removeItem('usuarioNome');
+        window.location.href = '/login.html';
+        throw new Error('Sessão expirada');
+    }
+
+    return response.json();
 }
 
 /* =============================================
@@ -227,7 +257,7 @@ async function carregarProvas() {
     try {
         const provas = await fetchAPI('/api/admin/provas/recentes');
         if (!provas.length) {
-            tbody.innerHTML = '<tr><td colspan="5" style="padding:24px;color:#94a3b8;font-size:13px;">Nenhuma prova encontrada.</td></tr>';
+            tbody.innerHTML = '<td><td colspan="5" style="padding:24px;color:#94a3b8;font-size:13px;">Nenhuma prova encontrada.</td></tr>';
             return;
         }
         const corStatus = { Ativa: '#dcfce7', Encerrada: '#fee2e2', Agendada: '#fef9c3', Inativa: '#e2e8f0' };
@@ -358,7 +388,12 @@ function configurarLogout() {
     if (!logoutBtn) return;
     logoutBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        if (confirm('Deseja sair da sua conta?')) logout();
+        if (confirm('Deseja sair da sua conta?')) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('usuarioPerfil');
+            localStorage.removeItem('usuarioNome');
+            window.location.href = '/login.html';
+        }
     });
 }
 
@@ -378,11 +413,40 @@ function atualizarBoasVindas() {
 }
 
 /* =============================================
+   PREENCHER HEADER COM DADOS DO USUÁRIO
+============================================= */
+
+function preencherHeaderUsuario(usuario) {
+    const avatarEl = document.querySelector('.user-avatar');
+    const nomeEl   = document.querySelector('.user-name');
+    const roleEl   = document.querySelector('.user-role');
+
+    if (avatarEl) avatarEl.textContent = (usuario.nome || 'A').charAt(0).toUpperCase();
+    if (nomeEl)   nomeEl.textContent   = usuario.nome || 'Administrador';
+    if (roleEl)   roleEl.textContent   = 'Administrador';
+}
+
+/* =============================================
    INICIALIZAÇÃO PRINCIPAL
 ============================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
-    verificarSessao((usuario) => {
+    // Verifica se o token existe e é válido
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        window.location.href = '/login.html';
+        return;
+    }
+    
+    // Carrega dados do usuário
+    fetch('/api/usuario/logado', {
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Não autenticado');
+        return response.json();
+    })
+    .then(usuario => {
         preencherHeaderUsuario(usuario);
         inicializarMenuMobile();
         inicializarCalendario();
@@ -391,5 +455,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setupAcoesRapidas();
         configurarLogout();
         setupPaginacaoAlunos();
+    })
+    .catch(() => {
+        localStorage.removeItem('authToken');
+        window.location.href = '/login.html';
     });
 });

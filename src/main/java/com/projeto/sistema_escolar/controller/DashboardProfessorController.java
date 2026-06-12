@@ -9,9 +9,8 @@ import com.projeto.sistema_escolar.service.ProvaService;
 import com.projeto.sistema_escolar.service.RespostaService;
 import com.projeto.sistema_escolar.service.TurmaService;
 import com.projeto.sistema_escolar.service.UsuarioService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -24,10 +23,10 @@ import java.util.Optional;
 @RequestMapping("/api/professor")
 public class DashboardProfessorController {
 
-    private final UsuarioService usuarioService;
-    private final ProvaService provaService;
+    private final UsuarioService  usuarioService;
+    private final ProvaService    provaService;
     private final RespostaService respostaService;
-    private final TurmaService turmaService;
+    private final TurmaService    turmaService;
 
     public DashboardProfessorController(UsuarioService usuarioService,
                                         ProvaService provaService,
@@ -39,22 +38,20 @@ public class DashboardProfessorController {
         this.turmaService    = turmaService;
     }
 
-    // ── Utilitário: pega usuário logado da sessão ──────────────────────────
+    // ── Utilitário ────────────────────────────────────────────────────────
 
-    private Optional<Usuario> getUsuarioLogado(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) return Optional.empty();
-        Integer usuarioId = (Integer) session.getAttribute("usuarioId");
+    private Optional<Usuario> getUsuarioLogado(Authentication auth) {
+        if (auth == null) return Optional.empty();
+        Integer usuarioId = (Integer) auth.getDetails();
         if (usuarioId == null) return Optional.empty();
         return usuarioService.buscarPorId(usuarioId);
     }
 
     // ── GET /api/professor/dashboard ──────────────────────────────────────
-    // Stat-cards: total de provas, turmas, alunos e média geral
 
     @GetMapping("/dashboard")
-    public ResponseEntity<?> getDashboard(HttpServletRequest request) {
-        Optional<Usuario> usuarioOpt = getUsuarioLogado(request);
+    public ResponseEntity<?> getDashboard(Authentication auth) {
+        Optional<Usuario> usuarioOpt = getUsuarioLogado(auth);
 
         if (usuarioOpt.isEmpty()) {
             return ResponseEntity.status(401)
@@ -63,29 +60,27 @@ public class DashboardProfessorController {
 
         Integer professorId = usuarioOpt.get().getId();
 
-        List<Prova> provas   = provaService.buscarPorProfessor(professorId);
-        List<Turma> turmas   = turmaService.buscarTurmasPorProfessor(professorId);
+        List<Prova> provas = provaService.buscarPorProfessor(professorId);
+        List<Turma> turmas = turmaService.buscarTurmasPorProfessor(professorId);
 
-        // Total de alunos somando alunos de cada turma
         int totalAlunos = turmas.stream()
             .mapToInt(t -> t.getAlunos() != null ? t.getAlunos().size() : 0)
             .sum();
 
-        // Média geral das provas que já têm respostas
-        double mediaGeral = 0.0;
-        int provasComRespostas = 0;
-        double somaMedias = 0.0;
+        double mediaGeral     = 0.0;
+        int    provasComResp  = 0;
+        double somaMedias     = 0.0;
 
         for (Prova prova : provas) {
             double media = respostaService.calcularMediaProva(prova.getId());
             if (media > 0) {
                 somaMedias += media;
-                provasComRespostas++;
+                provasComResp++;
             }
         }
 
-        if (provasComRespostas > 0) {
-            mediaGeral = Math.round((somaMedias / provasComRespostas) * 100.0) / 100.0;
+        if (provasComResp > 0) {
+            mediaGeral = Math.round((somaMedias / provasComResp) * 100.0) / 100.0;
         }
 
         return ResponseEntity.ok(new ResumoProfessorDTO(
@@ -96,38 +91,34 @@ public class DashboardProfessorController {
         ));
     }
 
-    // ── GET /api/professor/provas ──────────────────────────────────────────
-    // Lista de provas do professor com participação e média calculadas
+    // ── GET /api/professor/provas ─────────────────────────────────────────
 
     @GetMapping("/provas")
-    public ResponseEntity<?> getProvas(HttpServletRequest request) {
-        Optional<Usuario> usuarioOpt = getUsuarioLogado(request);
+    public ResponseEntity<?> getProvas(Authentication auth) {
+        Optional<Usuario> usuarioOpt = getUsuarioLogado(auth);
 
         if (usuarioOpt.isEmpty()) {
             return ResponseEntity.status(401)
                 .body(Map.of("erro", "Não autenticado"));
         }
 
-        Integer professorId = usuarioOpt.get().getId();
-        List<Prova> provas  = provaService.buscarPorProfessor(professorId);
+        Integer     professorId = usuarioOpt.get().getId();
+        List<Prova> provas      = provaService.buscarPorProfessor(professorId);
+        LocalDateTime agora     = LocalDateTime.now();
 
         List<ResumoProvaDTO> resultado = new ArrayList<>();
-        LocalDateTime agora = LocalDateTime.now();
 
         for (Prova prova : provas) {
-            long participacao = respostaService.contarAlunosQueResponderam(prova.getId());
-            double media      = respostaService.calcularMediaProva(prova.getId());
+            long   participacao = respostaService.contarAlunosQueResponderam(prova.getId());
+            double media        = respostaService.calcularMediaProva(prova.getId());
 
             String status;
-            if (prova.getAtivo() == null || !prova.getAtivo()) {
-                status = "Inativa";
-            } else if (prova.getDataInicio() != null && prova.getDataInicio().isAfter(agora)) {
-                status = "Agendada";
-            } else if (prova.getDataFim() != null && prova.getDataFim().isBefore(agora)) {
-                status = "Encerrada";
-            } else {
-                status = "Ativa";
-            }
+            if (prova.getAtivo() == null || !prova.getAtivo())           status = "Inativa";
+            else if (prova.getDataInicio() != null
+                  && prova.getDataInicio().isAfter(agora))                status = "Agendada";
+            else if (prova.getDataFim() != null
+                  && prova.getDataFim().isBefore(agora))                  status = "Encerrada";
+            else                                                           status = "Ativa";
 
             String nomeTurma = prova.getTurma() != null
                 ? prova.getTurma().getNome() : "—";
@@ -148,57 +139,50 @@ public class DashboardProfessorController {
         return ResponseEntity.ok(resultado);
     }
 
-    // ── GET /api/professor/turmas ──────────────────────────────────────────
-    // Turmas do professor com total de alunos e média
+    // ── GET /api/professor/turmas ─────────────────────────────────────────
 
     @GetMapping("/turmas")
-    public ResponseEntity<?> getTurmas(HttpServletRequest request) {
-        Optional<Usuario> usuarioOpt = getUsuarioLogado(request);
+    public ResponseEntity<?> getTurmas(Authentication auth) {
+        Optional<Usuario> usuarioOpt = getUsuarioLogado(auth);
 
         if (usuarioOpt.isEmpty()) {
             return ResponseEntity.status(401)
                 .body(Map.of("erro", "Não autenticado"));
         }
 
-        Integer professorId = usuarioOpt.get().getId();
-        List<Turma> turmas  = turmaService.buscarTurmasPorProfessor(professorId);
-        List<Prova> provas  = provaService.buscarPorProfessor(professorId);
+        Integer     professorId = usuarioOpt.get().getId();
+        List<Turma> turmas      = turmaService.buscarTurmasPorProfessor(professorId);
+        List<Prova> provas      = provaService.buscarPorProfessor(professorId);
 
         List<Map<String, Object>> resultado = new ArrayList<>();
 
         for (Turma turma : turmas) {
             int totalAlunos = turma.getAlunos() != null ? turma.getAlunos().size() : 0;
 
-            // Provas desta turma
             List<Prova> provasDaTurma = provas.stream()
                 .filter(p -> p.getTurma() != null
                           && p.getTurma().getId().equals(turma.getId()))
                 .toList();
 
-            // Média das provas da turma
             double mediaTurma = 0.0;
-            int count = 0;
+            int    count      = 0;
             for (Prova prova : provasDaTurma) {
                 double media = respostaService.calcularMediaProva(prova.getId());
-                if (media > 0) {
-                    mediaTurma += media;
-                    count++;
-                }
+                if (media > 0) { mediaTurma += media; count++; }
             }
             if (count > 0) {
                 mediaTurma = Math.round((mediaTurma / count) * 100.0) / 100.0;
             }
 
-            // Última prova aplicada
             String ultimaProva = provasDaTurma.stream()
                 .filter(p -> p.getDataInicio() != null)
                 .max((a, b) -> a.getDataInicio().compareTo(b.getDataInicio()))
-                .map(p -> p.getTitulo())
+                .map(Prova::getTitulo)
                 .orElse("Nenhuma");
 
             resultado.add(Map.of(
-                "turmaId",    turma.getId(),
-                "nome",       turma.getNome(),
+                "turmaId",     turma.getId(),
+                "nome",        turma.getNome(),
                 "totalAlunos", totalAlunos,
                 "totalProvas", provasDaTurma.size(),
                 "media",       mediaTurma,
@@ -210,12 +194,11 @@ public class DashboardProfessorController {
     }
 
     // ── GET /api/professor/provas/{provaId}/resultados ────────────────────
-    // Participação e média detalhada de uma prova específica
 
     @GetMapping("/provas/{provaId}/resultados")
     public ResponseEntity<?> getResultadosProva(@PathVariable Integer provaId,
-                                                 HttpServletRequest request) {
-        Optional<Usuario> usuarioOpt = getUsuarioLogado(request);
+                                                 Authentication auth) {
+        Optional<Usuario> usuarioOpt = getUsuarioLogado(auth);
 
         if (usuarioOpt.isEmpty()) {
             return ResponseEntity.status(401)
@@ -228,19 +211,18 @@ public class DashboardProfessorController {
                 .body(Map.of("erro", "Prova não encontrada"));
         }
 
-        Prova prova = provaOpt.get();
-
-        // Valida que a prova pertence ao professor logado
+        Prova   prova       = provaOpt.get();
         Integer professorId = usuarioOpt.get().getId();
+
         if (prova.getProfessor() == null
                 || !prova.getProfessor().getId().equals(professorId)) {
             return ResponseEntity.status(403)
                 .body(Map.of("erro", "Acesso negado"));
         }
 
-        long participacao = respostaService.contarAlunosQueResponderam(provaId);
-        double media      = respostaService.calcularMediaProva(provaId);
-        int totalQuestoes = prova.getQuestoes() != null ? prova.getQuestoes().size() : 0;
+        long   participacao = respostaService.contarAlunosQueResponderam(provaId);
+        double media        = respostaService.calcularMediaProva(provaId);
+        int    totalQuestoes = prova.getQuestoes() != null ? prova.getQuestoes().size() : 0;
 
         return ResponseEntity.ok(Map.of(
             "provaId",       provaId,

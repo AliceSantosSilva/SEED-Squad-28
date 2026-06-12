@@ -1,6 +1,6 @@
 /**
  * PROVA SERGIPE — aluno.js
- * Lógica específica do perfil Aluno.
+ * Lógica específica do perfil Aluno (compatível com JWT)
  */
 
 'use strict';
@@ -30,23 +30,50 @@ function initCalendar() {
     });
 }
 
+// ── FUNÇÃO fetchAPI COM TOKEN JWT ─────────────────────────────────────────────
+
+async function fetchAPI(url, options = {}) {
+    const token = localStorage.getItem('authToken');
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, {
+        ...options,
+        headers
+    });
+
+    if (response.status === 401) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('usuarioPerfil');
+        localStorage.removeItem('usuarioNome');
+        window.location.href = '/login.html';
+        throw new Error('Sessão expirada');
+    }
+
+    return response.json();
+}
+
 // ── Stat-cards (dados reais) ──────────────────────────────────────────────────
 
 async function carregarDashboard() {
     try {
         const data = await fetchAPI('/api/aluno/dashboard');
 
-        document.querySelector('.stat-card.primary .stat-value').textContent =
-            data.provasPendentes;
+        const pendentesEl = document.querySelector('.stat-card.primary .stat-value');
+        const realizadasEl = document.querySelector('.stat-card.success .stat-value');
+        const mediaEl = document.querySelector('.stat-card.warning .stat-value');
+        const totalEl = document.querySelector('.stat-card.info .stat-value2');
 
-        document.querySelector('.stat-card.success .stat-value').textContent =
-            data.provasRealizadas;
-
-        document.querySelector('.stat-card.warning .stat-value').textContent =
-            data.mediaGeral.toFixed(1);
-
-        document.querySelector('.stat-card.info .stat-value2').textContent =
-            data.totalProvas;
+        if (pendentesEl) pendentesEl.textContent = data.provasPendentes ?? 0;
+        if (realizadasEl) realizadasEl.textContent = data.provasRealizadas ?? 0;
+        if (mediaEl) mediaEl.textContent = data.mediaGeral ? data.mediaGeral.toFixed(1) : '—';
+        if (totalEl) totalEl.textContent = data.totalProvas ?? 0;
 
     } catch (_) {
         exibirAlerta('Erro ao carregar estatísticas.', 'erro');
@@ -82,7 +109,6 @@ async function carregarProvasPendentes() {
             </div>
         `).join('');
 
-        // Botões de iniciar prova
         container.querySelectorAll('.btn-start').forEach(btn => {
             btn.addEventListener('click', () => {
                 const provaId = btn.getAttribute('data-prova-id');
@@ -228,7 +254,6 @@ function setupPages() {
             const activePage = document.getElementById(`${pageId}-page`);
             if (activePage) activePage.style.display = 'block';
 
-            // Carrega dados ao navegar
             if (pageId === 'minhas-provas') fillFullExams();
             if (pageId === 'resultados')    fillFullResults();
         });
@@ -248,15 +273,54 @@ function initLogout() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            if (confirm('Deseja sair da sua conta?')) logout();
+            if (confirm('Deseja sair da sua conta?')) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('usuarioPerfil');
+                localStorage.removeItem('usuarioNome');
+                window.location.href = '/login.html';
+            }
         });
     }
 }
 
-// ── Inicialização ─────────────────────────────────────────────────────────────
+// ── PREENCHER HEADER ──────────────────────────────────────────────────────────
+
+function preencherHeaderUsuario(usuario) {
+    const avatarEl = document.querySelector('.user-avatar');
+    const nomeEl   = document.querySelector('.user-name');
+    const roleEl   = document.querySelector('.user-role');
+
+    if (avatarEl) avatarEl.textContent = (usuario.nome || 'A').charAt(0).toUpperCase();
+    if (nomeEl)   nomeEl.textContent   = usuario.nome || 'Aluno';
+    if (roleEl)   roleEl.textContent   = 'Aluno';
+}
+
+// ── VERIFICAÇÃO DE AUTENTICAÇÃO ───────────────────────────────────────────────
+
+function verificarAutenticacao() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        window.location.href = '/login.html';
+        return false;
+    }
+    return true;
+}
+
+// ── INICIALIZAÇÃO PRINCIPAL ───────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
-    verificarSessao((usuario) => {
+    if (!verificarAutenticacao()) return;
+
+    const token = localStorage.getItem('authToken');
+    
+    fetch('/api/usuario/logado', {
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Não autenticado');
+        return response.json();
+    })
+    .then(usuario => {
         preencherHeaderUsuario(usuario);
         inicializarMenuMobile();
         initCalendar();
@@ -265,5 +329,9 @@ document.addEventListener('DOMContentLoaded', () => {
         carregarResultados();
         setupPages();
         initLogout();
+    })
+    .catch(() => {
+        localStorage.removeItem('authToken');
+        window.location.href = '/login.html';
     });
 });
