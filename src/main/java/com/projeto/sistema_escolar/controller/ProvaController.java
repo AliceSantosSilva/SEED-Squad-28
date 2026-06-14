@@ -68,4 +68,15 @@ public class ProvaController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/gerar")
+    public ResponseEntity<Prova> gerarProvaAutomatica(
+            @RequestParam Integer disciplinaId,
+            @RequestParam Integer serieId,
+            @RequestParam Integer quantidadeQuestoes,
+            @Valid @RequestBody Prova provaBase) {
+
+        Prova provaGerada = service.gerarProvaAutomatica(provaBase, disciplinaId, serieId, quantidadeQuestoes);
+        return ResponseEntity.status(HttpStatus.CREATED).body(provaGerada);
+    }
 }

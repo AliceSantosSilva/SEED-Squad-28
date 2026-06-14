@@ -1,6 +1,8 @@
 package com.projeto.sistema_escolar.service;
 
 import com.projeto.sistema_escolar.model.Prova;
+import com.projeto.sistema_escolar.model.Questao;
+import com.projeto.sistema_escolar.repository.QuestaoRepository;
 import com.projeto.sistema_escolar.repository.ProvaRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +15,11 @@ public class ProvaService {
 
     private final ProvaRepository repository;
 
-    public ProvaService(ProvaRepository repository) {
+    private final  QuestaoRepository questaoRepository;
+
+    public ProvaService(ProvaRepository repository, QuestaoRepository questaoRepository) {
         this.repository = repository;
+        this.questaoRepository = questaoRepository;
     }
 
     public List<Prova> listarTodas() {
@@ -63,5 +68,12 @@ public class ProvaService {
 
     public List<Prova> buscarPorEscola(Integer escolaId) {
         return repository.findByEscolaId(escolaId);
+    }
+
+
+    public Prova gerarProvaAutomatica(Prova provaBase, Integer disciplinaId, Integer serieId, Integer quantidadeQuestoes) {
+        List<Questao> questoesSorteadas = questaoRepository.sortearQuestoesAleatorias(disciplinaId, serieId, quantidadeQuestoes);
+        provaBase.setQuestoes(questoesSorteadas);
+        return repository.save(provaBase);
     }
 }
