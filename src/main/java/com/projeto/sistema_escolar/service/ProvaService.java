@@ -8,7 +8,6 @@ import com.projeto.sistema_escolar.repository.TurmaRepository;
 import com.projeto.sistema_escolar.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import com.projeto.sistema_escolar.model.Questao;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,19 +16,16 @@ import java.util.Optional;
 @Service
 public class ProvaService {
 
-    private final ProvaRepository   repository;
-    private final UsuarioRepository usuarioRepository;
-    private final TurmaRepository   turmaRepository;
+    private final ProvaRepository repository;
     private final QuestaoRepository questaoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final TurmaRepository turmaRepository;
 
-    public ProvaService(ProvaRepository repository,
-                        UsuarioRepository usuarioRepository,
-                        TurmaRepository turmaRepository,
-                        QuestaoRepository questaoRepository) {
-        this.repository          = repository;
-        this.usuarioRepository   = usuarioRepository;
-        this.turmaRepository     = turmaRepository;
-        this.questaoRepository   = questaoRepository;
+    public ProvaService(ProvaRepository repository, QuestaoRepository questaoRepository, UsuarioRepository usuarioRepository, TurmaRepository turmaRepository) {
+        this.repository = repository;
+        this.questaoRepository = questaoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.turmaRepository = turmaRepository;
     }
 
     public List<Prova> listarTodas() {
@@ -94,5 +90,11 @@ public class ProvaService {
 
     public List<Prova> buscarPorEscola(Integer escolaId) {
         return repository.findByEscolaId(escolaId);
+    }
+
+    public Prova gerarProvaAutomatica(Prova provaBase, Integer disciplinaId, Integer serieId, Integer quantidadeQuestoes) {
+        List<Questao> questoesSorteadas = questaoRepository.sortearQuestoesAleatorias(disciplinaId, serieId, quantidadeQuestoes);
+        provaBase.setQuestoes(questoesSorteadas);
+        return repository.save(provaBase);
     }
 }
