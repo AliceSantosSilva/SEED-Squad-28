@@ -3,6 +3,8 @@ package com.projeto.sistema_escolar.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
@@ -16,6 +18,7 @@ public class Usuario {
     @Column(unique = true)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
 
     @ManyToOne
