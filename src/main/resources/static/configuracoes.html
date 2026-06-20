@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prova Sergipe | Configurações</title>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="stylesheet" href="/css/configuracoes.css" />
+  </head>
+  <body>
+    <div class="app">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="logo-area">
+          <div class="logo-icon">PS</div>
+          <div class="logo-text-wrapper">
+            <span class="logo-text">Prova Sergipe</span>
+            <span class="logo-subtitle" id="perfilTexto">Usuário</span>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <a href="#" class="nav-item" id="voltarPainel">
+            <i class="bx bxs-dashboard"></i>
+            <span>Dashboard</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a href="/configuracoes.html" class="nav-item active">
+            <i class="bx bx-cog"></i>
+            <span>Configurações</span>
+          </a>
+          <a href="#" class="nav-item" id="logout">
+            <i class="bx bx-log-out-circle"></i>
+            <span>Sair</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <header class="header">
+          <div class="header-left">
+            <button class="menu-btn" id="menuBtn">
+              <i class="bx bx-menu"></i>
+            </button>
+          </div>
+          <div class="header-right">
+            <div class="user">
+              <div class="user-avatar" id="avatarUsuario">U</div>
+              <div class="user-details">
+                <div class="user-name" id="nomeHeader">Usuário</div>
+                <div class="user-role" id="perfilHeader">Perfil</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="content">
+          <div class="welcome">
+            <h1>Configurações</h1>
+            <p>Gerencie sua conta e preferências</p>
+          </div>
+
+          <div class="config-grid">
+
+            <!-- CONTA -->
+            <div class="card">
+              <div class="card-header">
+                <h2><i class="bx bx-user"></i> Minha conta</h2>
+              </div>
+              <div class="config-form">
+                <label>Nome</label>
+                <input id="nomeUsuario" placeholder="Seu nome" />
+
+                <label>Email</label>
+                <input id="emailUsuario" placeholder="Seu e-mail" />
+
+                <label>Perfil</label>
+                <input id="perfilUsuario" disabled />
+
+                <button id="salvarConta">Salvar alterações</button>
+              </div>
+            </div>
+
+            <!-- SENHA -->
+            <div class="card">
+              <div class="card-header">
+                <h2><i class="bx bx-lock"></i> Segurança</h2>
+              </div>
+              <div class="config-form">
+                <label>Senha atual</label>
+                <input type="password" id="senhaAtual" placeholder="••••••••" />
+
+                <label>Nova senha</label>
+                <input type="password" id="novaSenha" placeholder="••••••••" />
+
+                <button id="alterarSenha">Alterar senha</button>
+              </div>
+            </div>
+
+            <!-- INFORMAÇÕES -->
+            <div class="card card-full" id="dadosPerfil">
+              <div class="card-header">
+                <h2><i class="bx bx-info-circle"></i> Informações</h2>
+              </div>
+              <div id="dadosExtras">Carregando...</div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/global.js" defer></script>
+    <script src="/js/verificar-autenticacao.js" defer></script>
+    <script src="/js/configuracoes.js" defer></script>
+  </body>
+</html>

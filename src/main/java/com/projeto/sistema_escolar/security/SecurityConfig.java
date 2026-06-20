@@ -48,7 +48,7 @@ public class SecurityConfig {
                 // Páginas HTML públicas
                 .requestMatchers(
                     "/", "/index.html",
-                    "/login.html", "/cadastro.html", "/trocar-senha.html"
+                    "/login.html", "/cadastro.html", "/trocar-senha.html", "/configuracoes.html"
                 ).permitAll()
 
                 // APIs públicas
