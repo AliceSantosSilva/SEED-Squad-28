@@ -1,5 +1,6 @@
 package com.projeto.sistema_escolar.security;
 
+import org.springframework.http.HttpMethod;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -71,6 +72,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/aluno/**").hasRole("ALUNO")
                 .requestMatchers("/api/coordenador/**").hasRole("COORDENADOR")
                 .requestMatchers("/api/coordenacao/**").hasRole("COORDENADOR")
+
+                // regras de provas
+                .requestMatchers(HttpMethod.POST,   "/api/provas/**").hasAnyRole("ADMIN", "PROFESSOR")
+                .requestMatchers(HttpMethod.PUT,    "/api/provas/**").hasAnyRole("ADMIN", "PROFESSOR")
+                .requestMatchers(HttpMethod.DELETE, "/api/provas/**").hasAnyRole("ADMIN", "PROFESSOR")
+                .requestMatchers(HttpMethod.GET,    "/api/provas/**").hasAnyRole("ADMIN", "PROFESSOR", "COORDENADOR")
 
                 // Qualquer outra API precisa de autenticação
                 .anyRequest().authenticated()

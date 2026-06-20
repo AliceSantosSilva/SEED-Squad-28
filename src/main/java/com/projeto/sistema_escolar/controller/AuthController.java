@@ -7,7 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
+import com.projeto.sistema_escolar.dto.LoginResponseDTO;
+import java.util.Optional;
 import java.util.Map;
 
 @RestController
@@ -31,20 +32,26 @@ public class AuthController {
         String email = body.get("email");
         String senha = body.get("senha");
 
-        return usuarioService.buscarPorEmail(email)
-            .filter(u -> passwordEncoder.matches(senha, u.getSenha()))
-            .map(u -> {
-                String perfil = u.getPerfil().getNome();
-                String token  = jwtUtil.gerarToken(u.getEmail(), perfil, u.getId());
-                return ResponseEntity.ok(Map.of(
-                    "token",  token,
-                    "perfil", perfil,
-                    "nome",   u.getNome(),
-                    "id",     u.getId()
-                ));
-            })
-            .orElse(ResponseEntity.status(401)
-                .body(Map.of("erro", "Email ou senha inválidos")));
+        Optional<Usuario> usuarioOpt = usuarioService.buscarPorEmail(email);
+
+        if (usuarioOpt.isEmpty() || !passwordEncoder.matches(senha, usuarioOpt.get().getSenha())) {
+            return ResponseEntity.status(401)
+                .body(new LoginResponseDTO("Email ou senha inválidos"));
+        }
+
+        Usuario u = usuarioOpt.get();
+        String perfil = u.getPerfil().getNome();
+        String token  = jwtUtil.gerarToken(u.getEmail(), perfil, u.getId());
+
+        return ResponseEntity.ok(new LoginResponseDTO(
+            u.getNome(),
+            perfil,
+            "Login realizado com sucesso",
+            true,   // sucesso
+            false,  // senhaExpirada
+            null,   // redirect — front calcula via obterDestinoPorPerfil()
+            token
+        ));
     }
 
     @PostMapping("/logout")
