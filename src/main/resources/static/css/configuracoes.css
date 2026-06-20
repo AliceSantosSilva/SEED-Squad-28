@@ -1,0 +1,141 @@
+/* =========================================
+   CONFIGURAÇÕES
+========================================= */
+
+.welcome {
+    margin-bottom: 30px;
+}
+
+.welcome h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.welcome p {
+    color: #6b7280;
+    font-size: 15px;
+}
+
+/* Grid dos cards */
+.config-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.card-full {
+    grid-column: 1 / -1;
+}
+
+/* Formulários */
+.config-form {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.config-form label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 12px;
+}
+
+.config-form label:first-child {
+    margin-top: 0;
+}
+
+.config-form input {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.config-form input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.config-form input:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* Botões */
+.config-form button {
+    margin-top: 20px;
+    width: fit-content;
+    padding: 11px 22px;
+    border: none;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: 0.2s;
+}
+
+.config-form button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+/* Informações extras */
+#dadosExtras {
+    padding: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.info-item {
+    background: #f8fafc;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    min-width: 180px;
+}
+
+.info-item strong {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .config-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-full {
+        grid-column: 1;
+    }
+
+    .config-form {
+        padding: 18px;
+    }
+
+    .welcome h1 {
+        font-size: 22px;
+    }
+
+    .config-form button {
+        width: 100%;
+    }
+}
