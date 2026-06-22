@@ -32,14 +32,13 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
 
-            // JWT é stateless — sem sessão HTTP
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
             .authorizeHttpRequests(auth -> auth
 
-                // Recursos estáticos — TODOS públicos (incluindo favicon)
+                // Recursos estáticos públicos
                 .requestMatchers(
                     "/css/**", "/js/**", "/img/**", "/favicon.ico",
                     "/admin/**", "/professor/**", "/aluno/**", "/coordenacao/**"
@@ -73,20 +72,23 @@ public class SecurityConfig {
                 .requestMatchers("/api/coordenador/**").hasRole("COORDENADOR")
                 .requestMatchers("/api/coordenacao/**").hasRole("COORDENADOR")
 
-                // regras de provas
+                // Regras de provas
                 .requestMatchers(HttpMethod.POST,   "/api/provas/**").hasAnyRole("ADMIN", "PROFESSOR")
                 .requestMatchers(HttpMethod.PUT,    "/api/provas/**").hasAnyRole("ADMIN", "PROFESSOR")
                 .requestMatchers(HttpMethod.DELETE, "/api/provas/**").hasAnyRole("ADMIN", "PROFESSOR")
                 .requestMatchers(HttpMethod.GET,    "/api/provas/**").hasAnyRole("ADMIN", "PROFESSOR", "COORDENADOR")
 
+                // Regras de eventos (calendário)
+                .requestMatchers(HttpMethod.GET,    "/api/eventos/**").authenticated()
+                .requestMatchers(HttpMethod.POST,   "/api/eventos/**").hasAnyRole("ADMIN", "COORDENADOR", "PROFESSOR")
+                .requestMatchers(HttpMethod.DELETE, "/api/eventos/**").hasAnyRole("ADMIN", "COORDENADOR", "PROFESSOR")
+
                 // Qualquer outra API precisa de autenticação
                 .anyRequest().authenticated()
             )
 
-            // Erros retornam JSON para APIs, sem redirecionar para HTML
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, e) -> {
-                    // Se for requisição de página HTML, redireciona para login
                     String accept = request.getHeader("Accept");
                     if (accept != null && accept.contains("text/html")) {
                         response.sendRedirect("/login.html");

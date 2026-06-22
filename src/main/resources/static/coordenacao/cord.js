@@ -1,27 +1,15 @@
 /**
  * PROVA SERGIPE — cord.js (Coordenador)
- * Lógica específica do perfil Coordenador (compatível com JWT)
  */
 
 'use strict';
 
-// ── FUNÇÃO fetchAPI COM TOKEN JWT ─────────────────────────────────────────────
-
 async function fetchAPI(url, options = {}) {
     const token = localStorage.getItem('authToken');
-    const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers
-    };
+    const headers = { 'Content-Type': 'application/json', ...options.headers };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(url, {
-        ...options,
-        headers
-    });
+    const response = await fetch(url, { ...options, headers });
 
     if (response.status === 401) {
         localStorage.removeItem('authToken');
@@ -34,7 +22,7 @@ async function fetchAPI(url, options = {}) {
     return response.json();
 }
 
-// ── CALENDÁRIO ────────────────────────────────────────────────────────────────
+// ── CALENDÁRIO MINI DO DASHBOARD ──────────────────────────────────────────────
 
 const coordEvents = [
     { date: getDataLocal(new Date()), type: "exam", title: "Hoje" },
@@ -45,30 +33,24 @@ let currentCalendarDate = new Date();
 
 function initCoordenacaoCalendar() {
     renderCalendar('coordenacao-calendar', currentCalendarDate, coordEvents, (date, events) => {
-        if (!events.length) {
-            exibirAlerta(`Nenhum evento em ${formatarData(date)}`, 'info');
-            return;
-        }
+        if (!events.length) { exibirAlerta(`Nenhum evento em ${formatarData(date)}`, 'info'); return; }
         exibirAlerta(`${formatarData(date)} • ${events.map(e => e.title).join(', ')}`, 'sucesso');
     });
     const container = document.getElementById('coordenacao-calendar');
     container?.addEventListener('calendarChange', (e) => { currentCalendarDate = e.detail.date; });
 }
 
-// ── CARREGAR ESCOLA ────────────────────────────────────────────────────────────
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
 
 async function fillEscolasRecentes() {
     const container = document.getElementById('escolasRecentesList');
     if (!container) return;
-
     try {
         const escola = await fetchAPI('/api/coordenador/minha-escola');
-
         if (!escola || !escola.nome) {
             container.innerHTML = '<p style="color:#64748b;font-size:12px;padding:8px;">Nenhuma escola encontrada.</p>';
             return;
         }
-
         container.innerHTML = `
             <div class="exam-item">
                 <div class="exam-info">
@@ -76,28 +58,21 @@ async function fillEscolasRecentes() {
                     <span class="exam-date"><i class='bx bx-map'></i> ${escola.cidade || '—'}</span>
                 </div>
                 <span class="result-grade">${escola.totalAlunos || 0} alunos</span>
-            </div>
-        `;
-
+            </div>`;
     } catch (_) {
         container.innerHTML = '<p style="color:#e74c3c;font-size:12px;padding:8px;">Erro ao carregar escola.</p>';
     }
 }
 
-// ── CARREGAR PROFESSORES ────────────────────────────────────────────────────────
-
 async function fillProfessoresRecentes() {
     const container = document.getElementById('professoresRecentesList');
     if (!container) return;
-
     try {
         const professores = await fetchAPI('/api/coordenador/meus-professores');
-
         if (!professores.length) {
             container.innerHTML = '<p style="color:#64748b;font-size:12px;padding:8px;">Nenhum professor encontrado.</p>';
             return;
         }
-
         container.innerHTML = professores.map(p => `
             <div class="result-item">
                 <div class="result-info">
@@ -105,52 +80,41 @@ async function fillProfessoresRecentes() {
                     <div class="result-date">${p.disciplina || '—'}</div>
                 </div>
                 <div class="result-grade">${p.totalTurmas || 0} turmas</div>
-            </div>
-        `).join('');
-
+            </div>`).join('');
     } catch (_) {
         container.innerHTML = '<p style="color:#e74c3c;font-size:12px;padding:8px;">Erro ao carregar professores.</p>';
     }
 }
 
-// ── CARREGAR TURMAS ────────────────────────────────────────────────────────────
-
 async function fillTurmas() {
-    const container = document.getElementById('turmas-list');
+    const container = document.getElementById('turmasTableBody');
     if (!container) return;
-
     try {
         const turmas = await fetchAPI('/api/coordenador/minhas-turmas');
-
         if (!turmas.length) {
-            container.innerHTML = '<p style="color:#64748b;font-size:12px;padding:8px;">Nenhuma turma encontrada.</p>';
+            container.innerHTML = '<tr><td colspan="5" style="padding:24px;color:#64748b;">Nenhuma turma encontrada.</td></tr>';
             return;
         }
-
         container.innerHTML = turmas.map(t => `
-            <div class="exam-item">
-                <div class="exam-info">
-                    <span class="exam-name">${t.nome} - ${t.serie}</span>
-                    <span class="exam-date"><i class='bx bx-group'></i> ${t.totalAlunos || 0} alunos</span>
-                </div>
-                <span class="result-grade">Média: ${t.mediaGeral || '—'}</span>
-            </div>
-        `).join('');
-
+            <tr style="border-bottom:1px solid #eef2f8;">
+                <td style="padding:12px 16px;">${t.nome} - ${t.serie || ''}</td>
+                <td style="padding:12px 16px;">${t.escola || '—'}</td>
+                <td style="padding:12px 16px;">${t.professor || '—'}</td>
+                <td style="padding:12px 16px;">${t.totalAlunos || 0}</td>
+                <td style="padding:12px 16px;">${t.mediaGeral || '—'}</td>
+            </tr>`).join('');
     } catch (_) {
-        container.innerHTML = '<p style="color:#e74c3c;font-size:12px;padding:8px;">Erro ao carregar turmas.</p>';
+        container.innerHTML = '<tr><td colspan="5" style="padding:24px;color:#64748b;">Erro ao carregar turmas.</td></tr>';
     }
 }
 
-// ── NAVEGAÇÃO ENTRE PÁGINAS ───────────────────────────────────────────────────
+// ── NAVEGAÇÃO ─────────────────────────────────────────────────────────────────
+
+let calendarioInicializado = false;
 
 function setupPages() {
     const navLinks = document.querySelectorAll('.nav-item[data-page]');
-
-    const pages = [
-        'dashboard', 'escolas', 'professores', 'turmas',
-        'provas', 'relatorios', 'calendario', 'configuracoes'
-    ];
+    const pages = ['dashboard', 'escolas', 'professores', 'turmas', 'provas', 'relatorios', 'calendario', 'configuracoes'];
 
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -168,9 +132,13 @@ function setupPages() {
             const activePage = document.getElementById(`${pageId}-page`);
             if (activePage) activePage.style.display = 'block';
 
-            if (pageId === 'escolas') fillEscolasRecentes();
+            if (pageId === 'escolas')     fillEscolasRecentes();
             if (pageId === 'professores') fillProfessoresRecentes();
-            if (pageId === 'turmas') fillTurmas();
+            if (pageId === 'turmas')      fillTurmas();
+            if (pageId === 'calendario' && !calendarioInicializado) {
+                Calendario.init('COORDENADOR');
+                calendarioInicializado = true;
+            }
         });
     });
 
@@ -199,36 +167,30 @@ function initLogout() {
     });
 }
 
-// ── PREENCHER HEADER ──────────────────────────────────────────────────────────
+// ── HEADER ────────────────────────────────────────────────────────────────────
 
 function preencherHeaderUsuario(usuario) {
     const avatarEl = document.querySelector('.user-avatar');
-    const nomeEl = document.querySelector('.user-name');
-    const roleEl = document.querySelector('.user-role');
-
+    const nomeEl   = document.querySelector('.user-name');
+    const roleEl   = document.querySelector('.user-role');
     if (avatarEl) avatarEl.textContent = (usuario.nome || 'C').charAt(0).toUpperCase();
-    if (nomeEl) nomeEl.textContent = usuario.nome || 'Coordenador';
-    if (roleEl) roleEl.textContent = 'Coordenador';
+    if (nomeEl)   nomeEl.textContent   = usuario.nome || 'Coordenador';
+    if (roleEl)   roleEl.textContent   = 'Coordenação';
 }
-
-// ── VERIFICAÇÃO DE AUTENTICAÇÃO ───────────────────────────────────────────────
 
 function verificarAutenticacao() {
     const token = localStorage.getItem('authToken');
-    if (!token) {
-        window.location.href = '/login.html';
-        return false;
-    }
+    if (!token) { window.location.href = '/login.html'; return false; }
     return true;
 }
 
-// ── INICIALIZAÇÃO PRINCIPAL ───────────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!verificarAutenticacao()) return;
 
     const token = localStorage.getItem('authToken');
-    
+
     fetch('/api/usuario/logado', {
         headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -242,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
         initCoordenacaoCalendar();
         fillEscolasRecentes();
         fillProfessoresRecentes();
-        fillTurmas();
         setupPages();
         initLogout();
     })

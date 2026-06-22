@@ -4,19 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Prova Sergipe | Painel da Coordenação</title>
-
-    <!-- Boxicons -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-
-    <!-- CSS: global primeiro, depois específico -->
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/coordenacao/cord.css">
+    <link rel="stylesheet" href="/css/calendario.css">
 </head>
 <body>
     <div class="app">
-        <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="logo-area">
                 <div class="logo-icon">PS</div>
@@ -50,6 +45,10 @@
                     <i class='bx bx-line-chart'></i>
                     <span>Relatórios</span>
                 </a>
+                <a href="#" class="nav-item" data-page="calendario">
+                    <i class='bx bx-calendar-event'></i>
+                    <span>Calendário</span>
+                </a>
             </nav>
             <div class="sidebar-footer">
                 <a href="/configuracoes.html" class="nav-item">
@@ -63,7 +62,6 @@
             </div>
         </aside>
 
-        <!-- MAIN -->
         <main class="main">
             <header class="header">
                 <div class="header-left">
@@ -77,21 +75,21 @@
                     <div class="user">
                         <div class="user-avatar">C</div>
                         <div class="user-details">
-                            <div class="user-name">Carla Mendes</div>
-                            <div class="user-role">Coordenadora</div>
+                            <div class="user-name">Coordenador</div>
+                            <div class="user-role">Coordenação</div>
                         </div>
                     </div>
                 </div>
             </header>
 
             <div class="content">
+
                 <!-- DASHBOARD -->
                 <div class="page active" id="dashboard-page">
                     <div class="welcome">
-                        <h1>Olá, Carla!</h1>
+                        <h1>Olá, Coordenador!</h1>
                         <p>Gerencie escolas, professores e acompanhe os resultados das avaliações.</p>
                     </div>
-
                     <div class="stats">
                         <div class="stat-card primary">
                             <div class="stat-data">
@@ -126,10 +124,8 @@
                             <div class="stat-icon"><i class='bx bx-notepad'></i></div>
                         </div>
                     </div>
-
                     <div class="dashboard-grid">
                         <div class="left-column">
-                            <!-- Escolas Recentes -->
                             <div class="card">
                                 <div class="card-header">
                                     <h2><i class='bx bxs-school'></i> Escolas Recentes</h2>
@@ -137,7 +133,6 @@
                                 </div>
                                 <div class="exams-list" id="escolasRecentesList"></div>
                             </div>
-                            <!-- Professores Recentes -->
                             <div class="card">
                                 <div class="card-header">
                                     <h2><i class='bx bxs-user-badge'></i> Professores Recentes</h2>
@@ -147,14 +142,12 @@
                             </div>
                         </div>
                         <div class="right-column">
-                            <!-- Calendário -->
                             <div class="card calendar-card">
                                 <div class="card-header">
                                     <h2><i class='bx bx-calendar'></i> Calendário</h2>
                                 </div>
                                 <div id="coordenacao-calendar"></div>
                             </div>
-                            <!-- Ações Rápidas -->
                             <div class="card">
                                 <div class="card-header">
                                     <h2><i class='bx bx-rocket'></i> Ações Rápidas</h2>
@@ -170,7 +163,7 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA ESCOLAS -->
+                <!-- ESCOLAS -->
                 <div class="page" id="escolas-page" style="display:none;">
                     <div class="provas-header">
                         <div><h1>Escolas</h1><p>Gerencie as escolas da rede estadual</p></div>
@@ -184,7 +177,7 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA PROFESSORES -->
+                <!-- PROFESSORES -->
                 <div class="page" id="professores-page" style="display:none;">
                     <div class="provas-header">
                         <div><h1>Professores</h1><p>Gerencie os professores da rede</p></div>
@@ -198,7 +191,7 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA TURMAS (simplificada) -->
+                <!-- TURMAS -->
                 <div class="page" id="turmas-page" style="display:none;">
                     <div class="provas-header">
                         <div><h1>Turmas</h1><p>Gerencie as turmas</p></div>
@@ -212,7 +205,7 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA PROVAS (visão geral) -->
+                <!-- PROVAS -->
                 <div class="page" id="provas-page" style="display:none;">
                     <div class="provas-header">
                         <div><h1>Provas</h1><p>Acompanhe todas as provas aplicadas</p></div>
@@ -225,21 +218,34 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA RELATÓRIOS -->
+                <!-- RELATÓRIOS -->
                 <div class="page" id="relatorios-page" style="display:none;">
-                    <div class="card"><div class="card-header"><h2>Relatórios Gerais</h2></div><p>Em desenvolvimento</p></div>
+                    <div class="card"><div class="card-header"><h2>Relatórios Gerais</h2></div><p style="padding:16px;">Em desenvolvimento</p></div>
                 </div>
 
-                <!-- PÁGINA CONFIGURAÇÕES -->
-                <div class="page" id="configuracoes-page" style="display:none;">
-                    <div class="card"><div class="card-header"><h2>Configurações</h2></div><p>Preferências e ajustes do sistema</p></div>
+                <!-- CALENDÁRIO -->
+                <div class="page" id="calendario-page" style="display:none;">
+                    <div class="welcome">
+                        <h1>Calendário Acadêmico</h1>
+                        <p>Gerencie períodos de prova e eventos da rede</p>
+                    </div>
+                    <div class="card">
+                        <div id="fullCalendarContainer" style="padding: 24px;"></div>
+                    </div>
                 </div>
+
+                <!-- CONFIGURAÇÕES -->
+                <div class="page" id="configuracoes-page" style="display:none;">
+                    <div class="card"><div class="card-header"><h2>Configurações</h2></div><p style="padding:16px;">Preferências e ajustes do sistema</p></div>
+                </div>
+
             </div>
         </main>
     </div>
 
     <script src="/js/global.js" defer></script>
     <script src="/js/verificar-autenticacao.js" defer></script>
+    <script src="/js/calendario.js" defer></script>
     <script src="/coordenacao/cord.js" defer></script>
 </body>
 </html>

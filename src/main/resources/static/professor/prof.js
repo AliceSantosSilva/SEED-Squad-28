@@ -1,5 +1,5 @@
 /**
- * PROVA SERGIPE — professor.js
+ * PROVA SERGIPE — prof.js
  * Lógica específica do perfil Professor (compatível com JWT)
  */
 
@@ -13,15 +13,9 @@ async function fetchAPI(url, options = {}) {
         'Content-Type': 'application/json',
         ...options.headers
     };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(url, {
-        ...options,
-        headers
-    });
+    const response = await fetch(url, { ...options, headers });
 
     if (response.status === 401) {
         localStorage.removeItem('authToken');
@@ -34,7 +28,7 @@ async function fetchAPI(url, options = {}) {
     return response.json();
 }
 
-// ── CALENDÁRIO ────────────────────────────────────────────────────────────────
+// ── CALENDÁRIO MINI DO DASHBOARD ──────────────────────────────────────────────
 
 const professorEvents = [
     { date: getDataLocal(new Date()), type: "exam", title: "Hoje" },
@@ -63,12 +57,10 @@ async function fillProvasRecentes() {
 
     try {
         const provas = await fetchAPI('/api/professor/minhas-provas/recentes');
-
         if (!provas.length) {
             container.innerHTML = '<p style="color:#64748b;font-size:12px;padding:8px;">Nenhuma prova recente.</p>';
             return;
         }
-
         container.innerHTML = provas.map(p => `
             <div class="exam-item">
                 <div class="exam-info">
@@ -78,7 +70,6 @@ async function fillProvasRecentes() {
                 <span class="exam-progress">${p.respondidos || 0}/${p.total || 0} responderam</span>
             </div>
         `).join('');
-
     } catch (_) {
         container.innerHTML = '<p style="color:#64748b;font-size:12px;padding:8px;">Nenhuma prova recente.</p>';
     }
@@ -92,12 +83,10 @@ async function fillTurmasList() {
 
     try {
         const turmas = await fetchAPI('/api/professor/minhas-turmas');
-
         if (!turmas.length) {
             container.innerHTML = '<p style="color:#64748b;font-size:12px;padding:8px;">Nenhuma turma encontrada.</p>';
             return;
         }
-
         container.innerHTML = turmas.map(t => `
             <div class="result-item">
                 <div class="result-info">
@@ -107,7 +96,6 @@ async function fillTurmasList() {
                 <div class="result-grade">${t.media || '—'}</div>
             </div>
         `).join('');
-
     } catch (_) {
         container.innerHTML = '<p style="color:#64748b;font-size:12px;padding:8px;">Erro ao carregar turmas.</p>';
     }
@@ -121,22 +109,15 @@ async function renderProvasTable(filtro = 'todas') {
 
     try {
         let provas = await fetchAPI('/api/professor/minhas-provas');
-
-        if (filtro === 'ativas') provas = provas.filter(p => p.status === 'Ativa');
+        if (filtro === 'ativas')     provas = provas.filter(p => p.status === 'Ativa');
         else if (filtro === 'encerradas') provas = provas.filter(p => p.status === 'Encerrada');
         else if (filtro === 'rascunhos') provas = provas.filter(p => p.status === 'Rascunho');
 
         if (!provas.length) {
-            container.innerHTML = '<tr><td colspan="5" style="padding:24px;color:#64748b;">Nenhuma prova encontrada.</td></tr>';
+            container.innerHTML = '<tr><td colspan="6" style="padding:24px;color:#64748b;">Nenhuma prova encontrada.</td></tr>';
             return;
         }
-
-        const statusClass = {
-            'Ativa': 'ativa',
-            'Encerrada': 'encerrada',
-            'Rascunho': 'rascunho'
-        };
-
+        const statusClass = { 'Ativa': 'ativa', 'Encerrada': 'encerrada', 'Rascunho': 'rascunho' };
         container.innerHTML = provas.map(p => `
             <tr style="border-bottom:1px solid #eef2f8;">
                 <td style="padding:12px 16px;">
@@ -154,9 +135,8 @@ async function renderProvasTable(filtro = 'todas') {
                 </td>
             </tr>
         `).join('');
-
     } catch (_) {
-        container.innerHTML = '<tr><td colspan="5" style="padding:24px;color:#64748b;">Nenhuma prova encontrada.</td></tr>';
+        container.innerHTML = '<tr><td colspan="6" style="padding:24px;color:#64748b;">Nenhuma prova encontrada.</td></tr>';
     }
 }
 
@@ -179,12 +159,10 @@ async function fillTurmasCards() {
 
     try {
         const turmas = await fetchAPI('/api/professor/minhas-turmas');
-
         if (!turmas.length) {
             container.innerHTML = '<p style="color:#64748b;padding:16px;">Nenhuma turma encontrada.</p>';
             return;
         }
-
         container.innerHTML = turmas.map(t => `
             <div class="turma-card">
                 <div class="turma-card-top">
@@ -217,7 +195,6 @@ async function fillTurmasCards() {
                 exibirAlerta('Detalhes da turma em desenvolvimento.', 'info');
             });
         });
-
     } catch (_) {
         container.innerHTML = '<p style="color:#64748b;padding:16px;">Erro ao carregar turmas.</p>';
     }
@@ -231,18 +208,11 @@ async function fillResultadosTable() {
 
     try {
         const resultados = await fetchAPI('/api/professor/meus-resultados');
-
         if (!resultados.length) {
-            container.innerHTML = '<tr><td colspan="4" style="padding:24px;color:#64748b;">Nenhum resultado encontrado.</td></tr>';
+            container.innerHTML = '<tr><td colspan="5" style="padding:24px;color:#64748b;">Nenhum resultado encontrado.</td></tr>';
             return;
         }
-
-        const statusClass = {
-            'Excelente': 'ativa',
-            'Regular': 'encerrada',
-            'Baixo': 'rascunho'
-        };
-
+        const statusClass = { 'Excelente': 'ativa', 'Regular': 'encerrada', 'Baixo': 'rascunho' };
         container.innerHTML = resultados.map(r => `
             <tr style="border-bottom:1px solid #eef2f8;">
                 <td style="padding:12px 16px;">${r.turma}</td>
@@ -254,13 +224,14 @@ async function fillResultadosTable() {
                 </td>
             </tr>
         `).join('');
-
     } catch (_) {
-        container.innerHTML = '</tr><td colspan="4" style="padding:24px;color:#64748b;">Nenhum resultado encontrado.</td></tr>';
+        container.innerHTML = '<tr><td colspan="5" style="padding:24px;color:#64748b;">Nenhum resultado encontrado.</td></tr>';
     }
 }
 
 // ── NAVEGAÇÃO ENTRE PÁGINAS ───────────────────────────────────────────────────
+
+let calendarioInicializado = false;
 
 function setupPages() {
     const navLinks = document.querySelectorAll('.nav-item[data-page]');
@@ -270,18 +241,28 @@ function setupPages() {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const pageId = link.getAttribute('data-page');
+
             navLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
+
             pages.forEach(p => {
                 const el = document.getElementById(`${p}-page`);
                 if (el) el.style.display = 'none';
             });
+
             const activePage = document.getElementById(`${pageId}-page`);
             if (activePage) activePage.style.display = 'block';
 
-            if (pageId === 'provas') renderProvasTable();
+            if (pageId === 'provas')      renderProvasTable();
             else if (pageId === 'turmas') fillTurmasCards();
             else if (pageId === 'resultados') fillResultadosTable();
+            else if (pageId === 'calendario') {
+                // Inicia o calendário completo só na primeira vez
+                if (!calendarioInicializado) {
+                    Calendario.init('PROFESSOR');
+                    calendarioInicializado = true;
+                }
+            }
         });
     });
 
@@ -315,22 +296,18 @@ function initLogout() {
 
 function preencherHeaderUsuario(usuario) {
     const avatarEl = document.querySelector('.user-avatar');
-    const nomeEl = document.querySelector('.user-name');
-    const roleEl = document.querySelector('.user-role');
-
+    const nomeEl   = document.querySelector('.user-name');
+    const roleEl   = document.querySelector('.user-role');
     if (avatarEl) avatarEl.textContent = (usuario.nome || 'P').charAt(0).toUpperCase();
-    if (nomeEl) nomeEl.textContent = usuario.nome || 'Professor';
-    if (roleEl) roleEl.textContent = 'Professor';
+    if (nomeEl)   nomeEl.textContent   = usuario.nome || 'Professor';
+    if (roleEl)   roleEl.textContent   = 'Professor';
 }
 
 // ── VERIFICAÇÃO DE AUTENTICAÇÃO ───────────────────────────────────────────────
 
 function verificarAutenticacao() {
     const token = localStorage.getItem('authToken');
-    if (!token) {
-        window.location.href = '/login.html';
-        return false;
-    }
+    if (!token) { window.location.href = '/login.html'; return false; }
     return true;
 }
 
@@ -340,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!verificarAutenticacao()) return;
 
     const token = localStorage.getItem('authToken');
-    
+
     fetch('/api/usuario/logado', {
         headers: { 'Authorization': `Bearer ${token}` }
     })
