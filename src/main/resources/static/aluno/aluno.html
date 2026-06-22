@@ -4,18 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Prova Sergipe | Painel do Aluno</title>
-    <!-- Boxicons CSS -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
-    <!-- Fonte Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-    <!-- CSS: global primeiro, depois específico do aluno -->
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/aluno/aluno.css">
+    <link rel="stylesheet" href="/css/calendario.css">
 </head>
 <body>
     <div class="app">
 
-        <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="logo-area">
                 <div class="logo-icon">PS</div>
@@ -54,27 +51,21 @@
             </div>
         </aside>
 
-        <!-- MAIN -->
         <main class="main">
             <header class="header">
                 <div class="header-left">
                     <button class="menu-btn" id="menuBtn"><i class='bx bx-menu'></i></button>
                 </div>
                 <div class="header-right">
-                    <!-- Ícone de notificação -->
                     <button class="notification-btn">
                         <i class='bx bx-bell'></i>
                         <span class="notification-badge">3</span>
                     </button>
-                    <!-- Info do usuário -->
                     <div class="user">
                         <div class="user-avatar">J</div>
                         <div class="user-details">
-                            <div class="user-name">João Silva</div>
-                            <div class="user-role">Aluno</div>
-                        </div>
-                        <div class="user-class-info">
-                            <span class="class-grade">3° Ano A</span>
+                            <div class="user-name">Aluno</div>
+                            <div class="user-role">Aluno · <span id="turmaAluno">3° Ano A</span></div>
                         </div>
                     </div>
                 </div>
@@ -84,14 +75,10 @@
 
                 <!-- DASHBOARD -->
                 <div class="page" id="dashboard-page">
-
-                    <!-- Welcome -->
                     <div class="welcome">
-                        <h1>Olá, João!</h1>
+                        <h1>Olá, Aluno!</h1>
                         <p>Bem-vindo ao seu painel de provas</p>
                     </div>
-
-                    <!-- Stats cards -->
                     <div class="stats">
                         <div class="stat-card primary">
                             <div class="stat-data">
@@ -127,90 +114,35 @@
                         </div>
                     </div>
 
-                    <!-- Layout: Esquerda (Provas + Resultados) + Direita (Calendário) -->
                     <div class="dashboard-grid">
-
-                        <!-- Coluna ESQUERDA -->
                         <div class="left-column">
-
-                            <!-- Próximas Provas -->
                             <div class="card">
                                 <div class="card-header">
                                     <h2><i class='bx bx-list-check'></i> Próximas Provas</h2>
                                     <a href="#" class="link view-all-link" data-page="minhas-provas">Ver todas <i class='bx bx-right-arrow-alt'></i></a>
                                 </div>
-                                <div class="exams-list" id="exams-list-dashboard">
-                                    <div class="exam-item">
-                                        <div class="exam-info">
-                                            <div class="exam-name">Matemática - Prova Bimestral</div>
-                                            <div class="exam-date"><i class='bx bx-calendar'></i> 15 Abr 2026 às 08:00</div>
-                                        </div>
-                                        <button class="btn-start">Iniciar Prova <i class='bx bx-play'></i></button>
-                                    </div>
-                                    <div class="exam-item">
-                                        <div class="exam-info">
-                                            <div class="exam-name">Português - Avaliação</div>
-                                            <div class="exam-date"><i class='bx bx-calendar'></i> 18 Abr 2026 às 10:00</div>
-                                        </div>
-                                        <button class="btn-start">Iniciar Prova <i class='bx bx-play'></i></button>
-                                    </div>
-                                    <div class="exam-item">
-                                        <div class="exam-info">
-                                            <div class="exam-name">História - Prova</div>
-                                            <div class="exam-date"><i class='bx bx-calendar'></i> 22 Abr 2026 às 14:00</div>
-                                        </div>
-                                        <button class="btn-start">Iniciar Prova <i class='bx bx-play'></i></button>
-                                    </div>
-                                </div>
+                                <div class="exams-list" id="exams-list-dashboard"></div>
                             </div>
-
-                            <!-- Resultados Recentes -->
                             <div class="card">
                                 <div class="card-header">
                                     <h2><i class='bx bx-bar-chart-alt-2'></i> Resultados Recentes</h2>
                                     <a href="#" class="link view-all-link" data-page="resultados">Ver todas <i class='bx bx-right-arrow-alt'></i></a>
                                 </div>
-                                <div class="results-list" id="results-list-dashboard">
-                                    <div class="result-item">
-                                        <div class="result-info">
-                                            <div class="result-name">Matemática - Prova Parcial</div>
-                                            <div class="result-date">15/03/2026</div>
-                                        </div>
-                                        <div class="result-grade good">8.5</div>
-                                    </div>
-                                    <div class="result-item">
-                                        <div class="result-info">
-                                            <div class="result-name">Português - Redação</div>
-                                            <div class="result-date">10/03/2026</div>
-                                        </div>
-                                        <div class="result-grade good">9.0</div>
-                                    </div>
-                                    <div class="result-item">
-                                        <div class="result-info">
-                                            <div class="result-name">História - Trabalho</div>
-                                            <div class="result-date">05/03/2026</div>
-                                        </div>
-                                        <div class="result-grade average">6.5</div>
-                                    </div>
-                                </div>
+                                <div class="results-list" id="results-list-dashboard"></div>
                             </div>
-
-                        </div><!-- /.left-column -->
-
-                        <!-- Coluna DIREITA: Calendário -->
+                        </div>
                         <div class="right-column">
                             <div class="card calendar-card">
-                            <div class="card-header">
-                                <h2><i class='bx bx-calendar'></i> Calendário</h2>
-                            </div>
+                                <div class="card-header">
+                                    <h2><i class='bx bx-calendar'></i> Calendário</h2>
+                                </div>
                                 <div id="calendarContainer"></div>
                             </div>
-                        </div><!-- /.right-column -->
+                        </div>
+                    </div>
+                </div>
 
-                    </div><!-- /.dashboard-grid -->
-                </div><!-- /#dashboard-page -->
-
-                <!-- PÁGINAS SECUNDÁRIAS -->
+                <!-- MINHAS PROVAS -->
                 <div class="page" id="minhas-provas-page" style="display:none;">
                     <div class="card">
                         <div class="card-header"><h2>Minhas Provas</h2></div>
@@ -218,6 +150,7 @@
                     </div>
                 </div>
 
+                <!-- RESULTADOS -->
                 <div class="page" id="resultados-page" style="display:none;">
                     <div class="card">
                         <div class="card-header"><h2>Todos os Resultados</h2></div>
@@ -225,13 +158,18 @@
                     </div>
                 </div>
 
+                <!-- CALENDÁRIO -->
                 <div class="page" id="calendario-page" style="display:none;">
+                    <div class="welcome">
+                        <h1>Calendário Acadêmico</h1>
+                        <p>Acompanhe as datas das suas provas e eventos</p>
+                    </div>
                     <div class="card">
-                        <div class="card-header"><h2>Calendário Acadêmico</h2></div>
-                        <div id="fullCalendarContainer"></div>
+                        <div id="fullCalendarContainer" style="padding: 24px;"></div>
                     </div>
                 </div>
 
+                <!-- CONFIGURAÇÕES -->
                 <div class="page" id="configuracoes-page" style="display:none;">
                     <div class="card">
                         <div class="card-header"><h2>Configurações</h2></div>
@@ -239,13 +177,13 @@
                     </div>
                 </div>
 
-            </div><!-- /#mainContent -->
+            </div>
         </main>
-    </div><!-- /.app -->
+    </div>
 
-    <!-- Scripts: global primeiro, depois específico do aluno -->
     <script src="/js/global.js" defer></script>
     <script src="/js/verificar-autenticacao.js" defer></script>
+    <script src="/js/calendario.js" defer></script>
     <script src="/aluno/aluno.js" defer></script>
 </body>
 </html>
