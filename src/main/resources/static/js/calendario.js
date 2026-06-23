@@ -52,23 +52,25 @@ const Calendario = (() => {
         const totalDias   = new Date(ano, mes + 1, 0).getDate();
 
         // Filtra eventos do mês
-        const eventosMes = eventos.filter(e => {
-            // Aluno não vê períodos de prova, só provas e eventos
-            if (perfilUsuario === 'ALUNO' && e.tipo === 'PERIODO_PROVA') return false;
+        // Expande cada evento em todos os seus dias
+        const eventosPorDia = {};
+        eventos.forEach(e => {
+            if (perfilUsuario === 'ALUNO' && e.tipo === 'PERIODO_PROVA') return;
             const inicio = new Date(e.dataInicio + 'T00:00:00');
             const fim    = new Date(e.dataFim    + 'T00:00:00');
-            return inicio.getFullYear() === ano && inicio.getMonth() === mes
-                || fim.getFullYear()    === ano && fim.getMonth()    === mes
-                || (inicio <= new Date(ano, mes, 1) && fim >= new Date(ano, mes, totalDias));
+            let d = new Date(inicio);
+            while (d <= fim) {
+                if (d.getFullYear() === ano && d.getMonth() === mes) {
+                    const dia = d.getDate();
+                    if (!eventosPorDia[dia]) eventosPorDia[dia] = [];
+                    eventosPorDia[dia].push(e);
+                }
+                d.setDate(d.getDate() + 1);
+            }
         });
 
         function eventosNoDia(dia) {
-            const d = new Date(ano, mes, dia);
-            return eventosMes.filter(e => {
-                const inicio = new Date(e.dataInicio + 'T00:00:00');
-                const fim    = new Date(e.dataFim    + 'T00:00:00');
-                return d >= inicio && d <= fim;
-            });
+            return eventosPorDia[dia] || [];
         }
 
         // Permissões

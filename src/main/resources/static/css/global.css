@@ -577,25 +577,30 @@ body {
     cursor: pointer;
     background: transparent;
     transition: all 0.2s;
+    position: relative;
 }
 
-.calendar-day.has-event.exam::after {
-    content: '';
+/* Pontos de eventos — container */
+.calendar-day .cal-dots {
     position: absolute;
     bottom: 2px;
-    width: 3px;
-    height: 3px;
-    background: #3b82f6;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+
+.calendar-day .cal-dot {
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
+    flex-shrink: 0;
 }
 
-.calendar-day.has-event.deadline::after {
-    background: #f59e0b;
-}
-
-.calendar-day.has-event.meeting::after {
-    background: #8b5cf6;
-}
+.calendar-day .cal-dot.exam     { background: #2563eb; }
+.calendar-day .cal-dot.deadline { background: #7c3aed; }
+.calendar-day .cal-dot.meeting  { background: #059669; }
 
 .calendar-day.today {
     background: #3b82f6;
@@ -629,9 +634,9 @@ body {
     border-radius: 50%;
 }
 
-.dot.exam     { background: #3b82f6; }
-.dot.deadline { background: #f59e0b; }
-.dot.meeting  { background: #8b5cf6; }
+.dot.exam     { background: #2563eb; }
+.dot.deadline { background: #7c3aed; }
+.dot.meeting  { background: #059669; }
 
 .cal-nav {
     background: #f1f5f9;
