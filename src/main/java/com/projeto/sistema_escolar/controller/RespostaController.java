@@ -1,5 +1,7 @@
 package com.projeto.sistema_escolar.controller;
 
+import com.projeto.sistema_escolar.dto.ResultadoProvaDTO;
+import com.projeto.sistema_escolar.dto.SubmissaoProvaDTO;
 import com.projeto.sistema_escolar.model.Resposta;
 import com.projeto.sistema_escolar.service.RespostaService;
 import jakarta.validation.Valid;
@@ -19,6 +21,19 @@ public class RespostaController {
     public RespostaController(RespostaService service) {
         this.service = service;
     }
+
+
+
+    @PostMapping("/submeter")
+    public ResponseEntity<ResultadoProvaDTO> submeterProva(
+            @RequestBody SubmissaoProvaDTO submissao,
+            @RequestParam Integer alunoId
+    ) {
+        ResultadoProvaDTO resultado = service.corrigirProva(submissao, alunoId);
+        return ResponseEntity.ok(resultado);
+    }
+
+
 
     @GetMapping
     public List<Resposta> listar() {
