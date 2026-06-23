@@ -24,20 +24,52 @@ async function fetchAPI(url, options = {}) {
 
 // ── CALENDÁRIO MINI DO DASHBOARD (estático, só visual) ────────────────────────
 
-const eventsData = [
-    { date: "2026-06-05", type: "exam", title: "Matemática - Prova Bimestral" },
-    { date: "2026-06-10", type: "exam", title: "Português - Avaliação" },
-];
+let alunoEventosCache = [];
 
-let currentCalendarDate = new Date();
-
-function initCalendar() {
-    renderCalendar('calendarContainer', currentCalendarDate, eventsData, (date, events) => {
-        if (!events.length) { exibirAlerta('Sem eventos nesta data.', 'info'); return; }
-        exibirAlerta(events.map(e => e.title).join(' • '), 'info');
+// Expande eventos com período em múltiplos dias
+function expandirEventos(todos, filtrarPeriodo) {
+    const result = [];
+    todos.forEach(e => {
+        if (filtrarPeriodo && e.tipo === 'PERIODO_PROVA') return;
+        const tipo = e.tipo === 'PROVA' ? 'exam' : e.tipo === 'PERIODO_PROVA' ? 'deadline' : 'meeting';
+        const inicio = new Date(e.dataInicio + 'T00:00:00');
+        const fim    = new Date(e.dataFim    + 'T00:00:00');
+        let d = new Date(inicio);
+        while (d <= fim) {
+            result.push({
+                date: d.toISOString().split('T')[0],
+                type: tipo,
+                title: e.titulo
+            });
+            d.setDate(d.getDate() + 1);
+        }
     });
-    const container = document.getElementById('calendarContainer');
-    container?.addEventListener('calendarChange', (e) => { currentCalendarDate = e.detail.date; });
+    return result;
+}
+
+async function initCalendar() {
+    let events = [];
+    try {
+        const token = localStorage.getItem('authToken');
+        const res = await fetch('/api/eventos', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+            const todos = await res.json();
+            events = expandirEventos(todos, true); // aluno NÃO vê PERIODO_PROVA
+            alunoEventosCache = events;
+        }
+    } catch (_) {}
+
+    renderCalendar('calendarContainer', new Date(), alunoEventosCache, (date, evs) => {
+        if (!evs.length) { exibirAlerta('Sem eventos nesta data.', 'info'); return; }
+        exibirAlerta(evs.map(e => e.title).join(' • '), 'info');
+    });
+
+    document.getElementById('calendarContainer')
+        ?.addEventListener('calendarChange', (e) => {
+            currentCalendarDate = e.detail.date;
+        });
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────

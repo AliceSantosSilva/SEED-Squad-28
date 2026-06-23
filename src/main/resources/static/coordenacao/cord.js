@@ -24,20 +24,52 @@ async function fetchAPI(url, options = {}) {
 
 // ── CALENDÁRIO MINI DO DASHBOARD ──────────────────────────────────────────────
 
-const coordEvents = [
-    { date: getDataLocal(new Date()), type: "exam", title: "Hoje" },
-    { date: "2026-06-20", type: "exam", title: "Simulado Estadual" }
-];
+let coordEventosCache = [];
 
-let currentCalendarDate = new Date();
-
-function initCoordenacaoCalendar() {
-    renderCalendar('coordenacao-calendar', currentCalendarDate, coordEvents, (date, events) => {
-        if (!events.length) { exibirAlerta(`Nenhum evento em ${formatarData(date)}`, 'info'); return; }
-        exibirAlerta(`${formatarData(date)} • ${events.map(e => e.title).join(', ')}`, 'sucesso');
+// Expande eventos com período em múltiplos dias
+function expandirEventos(todos, filtrarPeriodo) {
+    const result = [];
+    todos.forEach(e => {
+        if (filtrarPeriodo && e.tipo === 'PERIODO_PROVA') return;
+        const tipo = e.tipo === 'PROVA' ? 'exam' : e.tipo === 'PERIODO_PROVA' ? 'deadline' : 'meeting';
+        const inicio = new Date(e.dataInicio + 'T00:00:00');
+        const fim    = new Date(e.dataFim    + 'T00:00:00');
+        let d = new Date(inicio);
+        while (d <= fim) {
+            result.push({
+                date: d.toISOString().split('T')[0],
+                type: tipo,
+                title: e.titulo
+            });
+            d.setDate(d.getDate() + 1);
+        }
     });
-    const container = document.getElementById('coordenacao-calendar');
-    container?.addEventListener('calendarChange', (e) => { currentCalendarDate = e.detail.date; });
+    return result;
+}
+
+async function initCoordenacaoCalendar() {
+    let events = [];
+    try {
+        const token = localStorage.getItem('authToken');
+        const res = await fetch('/api/eventos', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+            const todos = await res.json();
+            events = expandirEventos(todos, false); // coordenador vê tudo
+            coordEventosCache = events;
+        }
+    } catch (_) {}
+
+    renderCalendar('coordenacao-calendar', new Date(), coordEventosCache, (date, evs) => {
+        if (!evs.length) { exibirAlerta(`Sem eventos em ${formatarData(date)}`, 'info'); return; }
+        exibirAlerta(evs.map(e => e.title).join(' • '), 'sucesso');
+    });
+
+    document.getElementById('coordenacao-calendar')
+        ?.addEventListener('calendarChange', (e) => {
+            currentCalendarDate = e.detail.date;
+        });
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────

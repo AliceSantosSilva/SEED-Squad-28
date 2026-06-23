@@ -196,9 +196,10 @@ function renderCalendar(containerId, currentDate, eventsData = [], onDayClick) {
         const dateKey     = `${ano}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const eventos     = eventosPorData[dateKey] || [];
         const tiposUnicos = [...new Set(eventos.map(e => e.type))];
+        const dotsHTML    = tiposUnicos.map(t => `<span class="cal-dot ${t}"></span>`).join('');
         diasHTML.push(
-            `<span class="calendar-day ${ehHoje(d)?'today':''} ${eventos.length?'has-event '+tiposUnicos.join(' '):''}"
-                   data-date="${dateKey}" title="${eventos.map(e=>e.title).join(', ')}">${d}</span>`
+            `<span class="calendar-day ${ehHoje(d)?'today':''} ${eventos.length?'has-event':''}"
+                   data-date="${dateKey}" title="${eventos.map(e=>e.title).join(', ')}">${d}${dotsHTML ? `<span class="cal-dots">${dotsHTML}</span>` : ''}</span>`
         );
     }
 
@@ -212,8 +213,8 @@ function renderCalendar(containerId, currentDate, eventsData = [], onDayClick) {
         <div class="calendar-days">${diasHTML.join('')}</div>
         <div class="calendar-legend">
             <span class="legend"><span class="dot exam"></span>Prova</span>
-            <span class="legend"><span class="dot deadline"></span>Prazo</span>
-            <span class="legend"><span class="dot meeting"></span>Reunião</span>
+            <span class="legend"><span class="dot deadline"></span>Período de Prova</span>
+            <span class="legend"><span class="dot meeting"></span>Evento</span>
         </div>`;
 
     if (typeof onDayClick === 'function') {
