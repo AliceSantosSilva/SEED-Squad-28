@@ -11,10 +11,14 @@ public interface QuestaoRepository extends JpaRepository<Questao, Integer> {
     List<Questao> findByDisciplinaId(Integer disciplinaId);
     List<Questao> findBySerieId(Integer serieId);
     List<Questao> findByDisciplinaIdAndSerieId(Integer disciplinaId, Integer serieId);
+    
     @Query(value = "SELECT * FROM questoes WHERE disciplina_id = :disciplinaId AND serie_id = :serieId ORDER BY RANDOM() LIMIT :quantidade", nativeQuery = true)
     List<Questao> sortearQuestoesAleatorias(
             @Param("disciplinaId") Integer disciplinaId,
             @Param("serieId") Integer serieId,
             @Param("quantidade") Integer quantidade
     );
+    
+    // 🔧 NOVO MÉTODO: Busca questões por disciplina e série ordenadas por dificuldade (mais fácil primeiro)
+    List<Questao> findByDisciplinaIdAndSerieIdOrderByDificuldadeAsc(Integer disciplinaId, Integer serieId);
 }

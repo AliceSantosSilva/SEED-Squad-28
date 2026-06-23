@@ -319,3 +319,116 @@ function capitalizarPerfil(perfil) {
     };
     return mapa[perfil?.toUpperCase()] || perfil || 'Usuário';
 }
+
+/* =============================================
+   10. NOTIFICAÇÕES (modal/dropdown)
+   ============================================= */
+
+let _notificacoesCache = [];
+
+async function buscarNotificacoes() {
+    try {
+        const token = localStorage.getItem('authToken');
+        const res = await fetch('/api/notificacoes', {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        });
+        if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data)) return data;
+        }
+    } catch (_) { /* endpoint ainda não existe no backend — usa mock abaixo */ }
+
+    return [
+        { id: 1, tipo: 'aviso',   lida: false, titulo: 'Prazo de lançamento de notas',
+          mensagem: 'O prazo para lançamento de notas encerra em 3 dias.',
+          dataHora: new Date().toISOString() },
+        { id: 2, tipo: 'info',    lida: false, titulo: 'Novo período de provas',
+          mensagem: 'A coordenação abriu um novo período de provas para o bimestre.',
+          dataHora: new Date(Date.now() - 86400000).toISOString() },
+        { id: 3, tipo: 'sucesso', lida: true,  titulo: 'Prova corrigida automaticamente',
+          mensagem: 'Os resultados da última prova já estão disponíveis.',
+          dataHora: new Date(Date.now() - 2 * 86400000).toISOString() },
+    ];
+}
+
+function tempoRelativo(dataISO) {
+    const min = Math.floor((Date.now() - new Date(dataISO).getTime()) / 60000);
+    if (min < 1) return 'agora mesmo';
+    if (min < 60) return `há ${min} min`;
+    const h = Math.floor(min / 60);
+    if (h < 24) return `há ${h}h`;
+    return `há ${Math.floor(h / 24)}d`;
+}
+
+const ICONES_NOTIFICACAO = {
+    info: 'bx-info-circle', sucesso: 'bx-check-circle',
+    aviso: 'bx-error', erro: 'bx-x-circle',
+};
+
+function renderizarNotificacoes() {
+    const lista = document.getElementById('notification-list');
+    const badge = document.querySelector('.notification-badge');
+    if (!lista) return;
+
+    const naoLidas = _notificacoesCache.filter(n => !n.lida).length;
+    if (badge) badge.style.display = naoLidas > 0 ? 'flex' : 'none';
+    if (badge && naoLidas > 0) badge.textContent = naoLidas > 9 ? '9+' : naoLidas;
+
+    if (!_notificacoesCache.length) {
+        lista.innerHTML = '<div class="notification-empty">Nenhuma notificação por aqui.</div>';
+        return;
+    }
+
+    lista.innerHTML = _notificacoesCache.map(n => `
+        <div class="notification-item ${n.lida ? '' : 'unread'}" data-id="${n.id}">
+            <div class="notification-item-icon ${n.tipo}"><i class='bx ${ICONES_NOTIFICACAO[n.tipo] || 'bx-bell'}'></i></div>
+            <div class="notification-item-body">
+                <div class="notification-item-title">${n.titulo}</div>
+                <div class="notification-item-text">${n.mensagem}</div>
+                <div class="notification-item-time">${tempoRelativo(n.dataHora)}</div>
+            </div>
+        </div>`).join('');
+
+    lista.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const notif = _notificacoesCache.find(n => n.id === parseInt(item.dataset.id));
+            if (notif) notif.lida = true;
+            renderizarNotificacoes();
+        });
+    });
+}
+
+function criarPainelNotificacoes() {
+    if (document.getElementById('notification-panel')) return;
+    const painel = document.createElement('div');
+    painel.id = 'notification-panel';
+    painel.className = 'notification-panel';
+    painel.innerHTML = `
+        <div class="notification-panel-header">
+            <h3>Notificações</h3>
+            <button class="notification-mark-all" id="notification-mark-all">Marcar todas como lidas</button>
+        </div>
+        <div class="notification-list" id="notification-list"></div>`;
+    document.body.appendChild(painel);
+
+    document.getElementById('notification-mark-all').addEventListener('click', () => {
+        _notificacoesCache.forEach(n => n.lida = true);
+        renderizarNotificacoes();
+    });
+}
+
+function inicializarNotificacoes() {
+    const btn = document.querySelector('.notification-btn');
+    if (!btn) return;
+
+    criarPainelNotificacoes();
+    buscarNotificacoes().then(lista => { _notificacoesCache = lista; renderizarNotificacoes(); });
+
+    const painel = document.getElementById('notification-panel');
+    btn.addEventListener('click', (e) => { e.stopPropagation(); painel.classList.toggle('open'); });
+    document.addEventListener('click', (e) => {
+        if (!painel.contains(e.target) && !btn.contains(e.target)) painel.classList.remove('open');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', inicializarNotificacoes);

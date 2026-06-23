@@ -1,5 +1,6 @@
 package com.projeto.sistema_escolar.controller;
 
+import com.projeto.sistema_escolar.dto.IncidenteProvaRequestDTO;
 import com.projeto.sistema_escolar.dto.ResultadoSubmissaoDTO;
 import com.projeto.sistema_escolar.dto.SubmissaoProvaDTO;
 import com.projeto.sistema_escolar.model.*;
@@ -20,17 +21,20 @@ public class AplicacaoProvaController {
     private final QuestaoService     questaoService;
     private final AlternativaService alternativaService;
     private final RespostaService    respostaService;
+    private final IncidenteProvaService incidenteProvaService;  // 🔧 NOVO
 
     public AplicacaoProvaController(UsuarioService usuarioService,
                                      ProvaService provaService,
                                      QuestaoService questaoService,
                                      AlternativaService alternativaService,
-                                     RespostaService respostaService) {
+                                     RespostaService respostaService,
+                                     IncidenteProvaService incidenteProvaService) {
         this.usuarioService     = usuarioService;
         this.provaService       = provaService;
         this.questaoService     = questaoService;
         this.alternativaService = alternativaService;
         this.respostaService    = respostaService;
+        this.incidenteProvaService = incidenteProvaService;  // 🔧 NOVO
     }
 
     // ── Utilitário ────────────────────────────────────────────────────────
@@ -179,9 +183,12 @@ public class AplicacaoProvaController {
         double notaMinima    = prova.getNotaMinimaAprovacao() != null
             ? prova.getNotaMinimaAprovacao() : 5.0;
 
-        return ResponseEntity.ok(new ResultadoSubmissaoDTO(
+        // 🔧 NOVO: Cria resultado e adiciona total de incidentes
+        ResultadoSubmissaoDTO resultado = new ResultadoSubmissaoDTO(
             prova.getId(), prova.getTitulo(), totalQuestoes, acertos, notaMinima
-        ));
+        );
+        resultado.setTotalIncidentes(incidenteProvaService.contar(aluno.getId(), prova.getId()));
+        return ResponseEntity.ok(resultado);
     }
 
     // ── GET /api/aplicacao/provas/{provaId}/resultado ─────────────────────
@@ -212,8 +219,39 @@ public class AplicacaoProvaController {
         double notaMinima    = prova.getNotaMinimaAprovacao() != null
             ? prova.getNotaMinimaAprovacao() : 5.0;
 
-        return ResponseEntity.ok(new ResultadoSubmissaoDTO(
+        // 🔧 NOVO: Cria resultado e adiciona total de incidentes
+        ResultadoSubmissaoDTO resultado = new ResultadoSubmissaoDTO(
             prova.getId(), prova.getTitulo(), totalRespostas, acertos, notaMinima
-        ));
+        );
+        resultado.setTotalIncidentes(incidenteProvaService.contar(aluno.getId(), provaId));
+        return ResponseEntity.ok(resultado);
+    }
+
+    // ── POST /api/aplicacao/provas/{provaId}/incidente ────────────────────
+    // 🔧 NOVO ENDPOINT
+
+    @PostMapping("/provas/{provaId}/incidente")
+    public ResponseEntity<?> registrarIncidente(@PathVariable Integer provaId,
+                                                 @RequestBody IncidenteProvaRequestDTO dto,
+                                                 Authentication auth) {
+        Optional<Usuario> usuarioOpt = getUsuarioLogado(auth);
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("erro", "Não autenticado"));
+        }
+
+        Optional<Prova> provaOpt = provaService.buscarPorId(provaId);
+        if (provaOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("erro", "Prova não encontrada"));
+        }
+
+        IncidenteProva incidente = new IncidenteProva();
+        incidente.setAluno(usuarioOpt.get());
+        incidente.setProva(provaOpt.get());
+        incidente.setTipo(dto.getTipo() != null ? dto.getTipo() : "SAIU_DA_ABA");
+        incidente.setMensagem(dto.getMensagem());
+        incidenteProvaService.registrar(incidente);
+
+        long total = incidenteProvaService.contar(usuarioOpt.get().getId(), provaId);
+        return ResponseEntity.ok(Map.of("totalIncidentes", total));
     }
 }

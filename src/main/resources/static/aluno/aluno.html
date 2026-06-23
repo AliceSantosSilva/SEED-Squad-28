@@ -34,6 +34,11 @@
                     <i class='bx bx-line-chart'></i>
                     <span>Resultados</span>
                 </a>
+                <!-- 🔧 NOVO: Trilha de Estudos -->
+                <a href="#" class="nav-item" data-page="trilha">
+                    <i class='bx bx-map-alt'></i>
+                    <span>Trilha de Estudos</span>
+                </a>
                 <a href="#" class="nav-item" data-page="calendario">
                     <i class='bx bx-calendar-event'></i>
                     <span>Calendário</span>
@@ -156,6 +161,15 @@
                         <div class="card-header"><h2>Todos os Resultados</h2></div>
                         <div id="allResultsList" class="results-list-full"></div>
                     </div>
+                </div>
+
+                <!-- TRILHA DE ESTUDOS -->
+                <div class="page" id="trilha-page" style="display:none;">
+                    <div class="welcome">
+                        <h1>Trilha de Estudos</h1>
+                        <p>Recomendações personalizadas com base no seu desempenho</p>
+                    </div>
+                    <div id="trilhaContainer"></div>
                 </div>
 
                 <!-- CALENDÁRIO -->

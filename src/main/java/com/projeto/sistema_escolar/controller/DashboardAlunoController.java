@@ -2,10 +2,13 @@ package com.projeto.sistema_escolar.controller;
 
 import com.projeto.sistema_escolar.dto.ResumoAlunoDTO;
 import com.projeto.sistema_escolar.dto.ResultadoProvaDTO;
+import com.projeto.sistema_escolar.dto.TrilhaDisciplinaDTO;
 import com.projeto.sistema_escolar.model.Prova;
 import com.projeto.sistema_escolar.model.Usuario;
+import com.projeto.sistema_escolar.service.IncidenteProvaService;
 import com.projeto.sistema_escolar.service.ProvaService;
 import com.projeto.sistema_escolar.service.RespostaService;
+import com.projeto.sistema_escolar.service.TrilhaService;
 import com.projeto.sistema_escolar.service.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,13 +27,19 @@ public class DashboardAlunoController {
     private final UsuarioService  usuarioService;
     private final ProvaService    provaService;
     private final RespostaService respostaService;
+    private final TrilhaService   trilhaService;
+    private final IncidenteProvaService incidenteProvaService;  // 🔧 NOVO
 
     public DashboardAlunoController(UsuarioService usuarioService,
                                     ProvaService provaService,
-                                    RespostaService respostaService) {
+                                    RespostaService respostaService,
+                                    TrilhaService trilhaService,
+                                    IncidenteProvaService incidenteProvaService) {
         this.usuarioService  = usuarioService;
         this.provaService    = provaService;
         this.respostaService = respostaService;
+        this.trilhaService   = trilhaService;
+        this.incidenteProvaService = incidenteProvaService;  // 🔧 NOVO
     }
 
     // ── Utilitário ────────────────────────────────────────────────────────
@@ -159,16 +168,33 @@ public class DashboardAlunoController {
             double notaMinima = prova.getNotaMinimaAprovacao() != null
                 ? prova.getNotaMinimaAprovacao() : 5.0;
 
-            resultados.add(new ResultadoProvaDTO(
+            // 🔧 NOVO: Cria DTO e adiciona total de incidentes
+            ResultadoProvaDTO dto = new ResultadoProvaDTO(
                 prova.getId(),
                 prova.getTitulo(),
                 dataRealizado,
                 total,
                 acertos,
                 notaMinima
-            ));
+            );
+            dto.setTotalIncidentes(incidenteProvaService.contar(alunoId, prova.getId()));
+            resultados.add(dto);
         }
 
         return ResponseEntity.ok(resultados);
+    }
+
+    // ── GET /api/aluno/trilha ─────────────────────────────────────────────
+
+    @GetMapping("/trilha")
+    public ResponseEntity<?> getTrilha(Authentication auth) {
+        Optional<Usuario> usuarioOpt = getUsuarioLogado(auth);
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(401)
+                .body(Map.of("erro", "Não autenticado"));
+        }
+
+        List<TrilhaDisciplinaDTO> trilha = trilhaService.gerarTrilha(usuarioOpt.get());
+        return ResponseEntity.ok(trilha);
     }
 }

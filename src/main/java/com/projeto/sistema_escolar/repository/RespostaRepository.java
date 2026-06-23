@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import com.projeto.sistema_escolar.dto.DesempenhoDisciplinaDTO;
 
 public interface RespostaRepository extends JpaRepository<Resposta, Integer> {
 
@@ -99,4 +100,16 @@ public interface RespostaRepository extends JpaRepository<Resposta, Integer> {
         WHERE r.prova.turma.escola.id = :escolaId
     """)
     Double calcularMediaGeralPorEscola(@Param("escolaId") Integer escolaId);
+
+    @Query("""
+        SELECT new com.projeto.sistema_escolar.dto.DesempenhoDisciplinaDTO(
+            d.id, d.nome, COUNT(r), SUM(CASE WHEN r.correta = true THEN 1 ELSE 0 END)
+        )
+        FROM Resposta r
+        JOIN r.questao q
+        JOIN q.disciplina d
+        WHERE r.aluno.id = :alunoId
+        GROUP BY d.id, d.nome
+    """)
+    List<DesempenhoDisciplinaDTO> calcularDesempenhoPorDisciplina(@Param("alunoId") Integer alunoId);
 }

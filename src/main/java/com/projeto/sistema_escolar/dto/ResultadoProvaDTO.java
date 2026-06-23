@@ -11,6 +11,7 @@ public class ResultadoProvaDTO {
     private long acertos;
     private double nota;
     private String situacao; // "Aprovado" | "Reprovado"
+    private long totalIncidentes;  // 🔧 NOVO
 
     public ResultadoProvaDTO(Integer provaId, String tituloProva,
                              LocalDateTime dataRealizado, long totalQuestoes,
@@ -24,6 +25,7 @@ public class ResultadoProvaDTO {
             ? Math.round((acertos * 10.0 / totalQuestoes) * 100.0) / 100.0
             : 0.0;
         this.situacao = this.nota >= notaMinimaAprovacao ? "Aprovado" : "Reprovado";
+        this.totalIncidentes = 0;  // 🔧 INICIALIZA
     }
 
     public Integer getProvaId()          { return provaId; }
@@ -33,4 +35,8 @@ public class ResultadoProvaDTO {
     public long getAcertos()             { return acertos; }
     public double getNota()              { return nota; }
     public String getSituacao()          { return situacao; }
+    
+    // 🔧 NOVOS GETTER E SETTER
+    public long getTotalIncidentes()     { return totalIncidentes; }
+    public void setTotalIncidentes(long totalIncidentes) { this.totalIncidentes = totalIncidentes; }
 }

@@ -9,6 +9,7 @@ public class ResultadoSubmissaoDTO {
     private double nota;
     private String situacao;
     private String mensagem;
+    private long totalIncidentes;  // 🔧 NOVO
 
     public ResultadoSubmissaoDTO(Integer provaId, String tituloProva,
                                   long totalQuestoes, long acertos,
@@ -24,6 +25,7 @@ public class ResultadoSubmissaoDTO {
         this.mensagem  = this.situacao.equals("Aprovado")
             ? "Parabéns! Você foi aprovado nesta prova."
             : "Você não atingiu a nota mínima. Continue estudando!";
+        this.totalIncidentes = 0;  // 🔧 INICIALIZA
     }
 
     public Integer getProvaId()        { return provaId; }
@@ -33,4 +35,8 @@ public class ResultadoSubmissaoDTO {
     public double getNota()            { return nota; }
     public String getSituacao()        { return situacao; }
     public String getMensagem()        { return mensagem; }
+    
+    // 🔧 NOVOS GETTER E SETTER
+    public long getTotalIncidentes()   { return totalIncidentes; }
+    public void setTotalIncidentes(long totalIncidentes) { this.totalIncidentes = totalIncidentes; }
 }

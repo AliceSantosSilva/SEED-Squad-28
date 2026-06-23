@@ -197,13 +197,53 @@ async function fillFullResults() {
     }
 }
 
+// ── 🔧 NOVO: TRILHA DE ESTUDOS ──────────────────────────────────────────────
+
+async function fillTrilha() {
+    const container = document.getElementById('trilhaContainer');
+    if (!container) return;
+    container.innerHTML = '<p style="color:#64748b;padding:16px;">Carregando trilha...</p>';
+    try {
+        const trilha = await fetchAPI('/api/aluno/trilha');
+        if (!trilha.length) {
+            container.innerHTML = `<div class="card"><p style="color:#16a34a;padding:16px;">
+                <i class='bx bx-check-circle'></i> Bom desempenho em todas as disciplinas avaliadas até agora!
+            </p></div>`;
+            return;
+        }
+        const corNivel = { 'Crítico': '#fee2e2', 'Atenção': '#fef9c3', 'Reforço': '#e0e7ff' };
+        const txtNivel = { 'Crítico': '#991b1b', 'Atenção': '#854d0e', 'Reforço': '#3730a3' };
+        container.innerHTML = trilha.map(d => `
+            <div class="card" style="margin-bottom:16px;">
+                <div class="card-header">
+                    <h2><i class='bx bx-book-content'></i> ${d.disciplinaNome}</h2>
+                    <span style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;
+                        background:${corNivel[d.nivel] || '#e2e8f0'};color:${txtNivel[d.nivel] || '#334155'};">
+                        ${d.nivel} • ${d.percentualAcerto.toFixed(0)}% de acerto
+                    </span>
+                </div>
+                <div class="exams-list">
+                    ${d.questoesRecomendadas.length ? d.questoesRecomendadas.map(q => `
+                        <div class="exam-item">
+                            <div class="exam-info">
+                                <div class="exam-name">${q.enunciado.length > 90 ? q.enunciado.substring(0,90)+'…' : q.enunciado}</div>
+                                <div class="exam-date"><i class='bx bx-bar-chart-alt-2'></i> Dificuldade ${q.dificuldade ?? '—'}</div>
+                            </div>
+                        </div>`).join('') : '<p style="color:#94a3b8;font-size:12px;padding:8px;">Sem questões novas pra praticar agora.</p>'}
+                </div>
+            </div>`).join('');
+    } catch (_) {
+        container.innerHTML = '<p style="color:#e74c3c;padding:16px;">Erro ao carregar trilha de estudos.</p>';
+    }
+}
+
 // ── NAVEGAÇÃO ─────────────────────────────────────────────────────────────────
 
 let calendarioInicializado = false;
 
 function setupPages() {
     const navLinks = document.querySelectorAll('.nav-item[data-page]');
-    const pages    = ['dashboard', 'minhas-provas', 'resultados', 'calendario', 'configuracoes'];
+    const pages    = ['dashboard', 'minhas-provas', 'resultados', 'trilha', 'calendario', 'configuracoes'];
 
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
@@ -223,8 +263,8 @@ function setupPages() {
 
             if (pageId === 'minhas-provas') fillFullExams();
             if (pageId === 'resultados')    fillFullResults();
+            if (pageId === 'trilha')        fillTrilha();
             if (pageId === 'calendario' && !calendarioInicializado) {
-                // ALUNO: passa perfil 'ALUNO' — o calendário filtra e esconde PERIODO_PROVA
                 Calendario.init('ALUNO');
                 calendarioInicializado = true;
             }
