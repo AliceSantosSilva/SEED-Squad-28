@@ -1,8 +1,11 @@
 package com.projeto.sistema_escolar.service;
 
-import com.projeto.sistema_escolar.model.Resposta;
-import com.projeto.sistema_escolar.repository.RespostaRepository;
+import com.projeto.sistema_escolar.dto.ResultadoProvaDTO;
+import com.projeto.sistema_escolar.dto.SubmissaoProvaDTO;
+import com.projeto.sistema_escolar.model.*;
+import com.projeto.sistema_escolar.repository.*;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,10 +14,78 @@ import java.util.Optional;
 public class RespostaService {
 
     private final RespostaRepository repository;
+    private final ProvaRepository provaRepository;
+    private final QuestaoRepository questaoRepository;
+    private final AlternativaRepository alternativaRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public RespostaService(RespostaRepository repository) {
+
+    public RespostaService(RespostaRepository repository, ProvaRepository provaRepository,
+                           QuestaoRepository questaoRepository, AlternativaRepository alternativaRepository,
+                           UsuarioRepository usuarioRepository) {
         this.repository = repository;
+        this.provaRepository = provaRepository;
+        this.questaoRepository = questaoRepository;
+        this.alternativaRepository = alternativaRepository;
+        this.usuarioRepository = usuarioRepository;
     }
+
+
+
+    @Transactional
+    public ResultadoProvaDTO corrigirProva(SubmissaoProvaDTO submissao, Integer alunoLogadoId) {
+
+        if (jaRespondeu(alunoLogadoId, submissao.getProvaId())) {
+            throw new RuntimeException("Este aluno já submeteu as respostas para esta prova!");
+        }
+
+
+        Prova prova = provaRepository.findById(submissao.getProvaId())
+                .orElseThrow(() -> new RuntimeException("Prova não encontrada"));
+
+        Usuario aluno = usuarioRepository.findById(alunoLogadoId)
+                .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+
+        long acertos = 0;
+
+
+        for (SubmissaoProvaDTO.RespostaItemDTO item : submissao.getRespostas()) {
+
+            Questao questao = questaoRepository.findById(item.getQuestaoId())
+                    .orElseThrow(() -> new RuntimeException("Questão não encontrada"));
+
+            Alternativa alternativaEscolhida = alternativaRepository.findById(item.getAlternativaId())
+                    .orElseThrow(() -> new RuntimeException("Alternativa não encontrada"));
+
+            boolean acertou = alternativaEscolhida.isCorreta();
+            if (acertou) {
+                acertos++;
+            }
+
+
+            Resposta resposta = new Resposta();
+            resposta.setAluno(aluno);
+            resposta.setProva(prova);
+            resposta.setQuestao(questao);
+            resposta.setAlternativa(alternativaEscolhida);
+            resposta.setCorreta(acertou);
+
+            repository.save(resposta);
+        }
+
+
+
+        return new ResultadoProvaDTO(
+                prova.getId(),
+                prova.getTitulo(),
+                java.time.LocalDateTime.now(),
+                prova.getQuestoes().size(),
+                acertos,
+                prova.getNotaMinimaAprovacao()
+        );
+    }
+
+
 
     public List<Resposta> listarTodas() {
         return repository.findAll();
