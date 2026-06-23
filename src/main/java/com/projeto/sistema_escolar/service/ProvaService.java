@@ -2,8 +2,11 @@ package com.projeto.sistema_escolar.service;
 
 import com.projeto.sistema_escolar.model.Prova;
 import com.projeto.sistema_escolar.model.Questao;
-import com.projeto.sistema_escolar.repository.QuestaoRepository;
 import com.projeto.sistema_escolar.repository.ProvaRepository;
+import com.projeto.sistema_escolar.repository.QuestaoRepository;
+import com.projeto.sistema_escolar.repository.TurmaRepository;
+import com.projeto.sistema_escolar.repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,12 +17,15 @@ import java.util.Optional;
 public class ProvaService {
 
     private final ProvaRepository repository;
+    private final QuestaoRepository questaoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final TurmaRepository turmaRepository;
 
-    private final  QuestaoRepository questaoRepository;
-
-    public ProvaService(ProvaRepository repository, QuestaoRepository questaoRepository) {
+    public ProvaService(ProvaRepository repository, QuestaoRepository questaoRepository, UsuarioRepository usuarioRepository, TurmaRepository turmaRepository) {
         this.repository = repository;
         this.questaoRepository = questaoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.turmaRepository = turmaRepository;
     }
 
     public List<Prova> listarTodas() {
@@ -47,7 +53,23 @@ public class ProvaService {
     }
 
     public Prova salvar(Prova prova) {
-        return repository.save(prova);
+        if (prova.getProfessor() != null && prova.getProfessor().getId() != null) {
+            usuarioRepository.findById(prova.getProfessor().getId())
+                .ifPresent(prova::setProfessor);
+        }
+        if (prova.getTurma() != null && prova.getTurma().getId() != null) {
+            turmaRepository.findById(prova.getTurma().getId())
+                .ifPresent(prova::setTurma);
+        }
+        if (prova.getQuestoes() != null) {
+            List<Questao> questoes = prova.getQuestoes().stream()
+                .map((Questao q) -> questaoRepository.findById(q.getId()).orElse(null))
+                .filter(q -> q != null)
+                .toList();
+            prova.setQuestoes(questoes);
+        }
+        Prova salva = repository.save(prova);
+        return repository.findById(salva.getId()).orElse(salva);
     }
 
     public void deletar(Integer id) {
@@ -69,7 +91,6 @@ public class ProvaService {
     public List<Prova> buscarPorEscola(Integer escolaId) {
         return repository.findByEscolaId(escolaId);
     }
-
 
     public Prova gerarProvaAutomatica(Prova provaBase, Integer disciplinaId, Integer serieId, Integer quantidadeQuestoes) {
         List<Questao> questoesSorteadas = questaoRepository.sortearQuestoesAleatorias(disciplinaId, serieId, quantidadeQuestoes);
