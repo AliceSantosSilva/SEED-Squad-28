@@ -4,7 +4,9 @@ import com.projeto.sistema_escolar.dto.ResultadoProvaDTO;
 import com.projeto.sistema_escolar.dto.SubmissaoProvaDTO;
 import com.projeto.sistema_escolar.model.*;
 import com.projeto.sistema_escolar.repository.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -19,7 +21,6 @@ public class RespostaService {
     private final AlternativaRepository alternativaRepository;
     private final UsuarioRepository usuarioRepository;
 
-
     public RespostaService(RespostaRepository repository, ProvaRepository provaRepository,
                            QuestaoRepository questaoRepository, AlternativaRepository alternativaRepository,
                            UsuarioRepository usuarioRepository) {
@@ -30,8 +31,6 @@ public class RespostaService {
         this.usuarioRepository = usuarioRepository;
     }
 
-
-
     @Transactional
     public ResultadoProvaDTO corrigirProva(SubmissaoProvaDTO submissao, Integer alunoLogadoId) {
 
@@ -39,15 +38,21 @@ public class RespostaService {
             throw new RuntimeException("Este aluno já submeteu as respostas para esta prova!");
         }
 
-
         Prova prova = provaRepository.findById(submissao.getProvaId())
                 .orElseThrow(() -> new RuntimeException("Prova não encontrada"));
 
         Usuario aluno = usuarioRepository.findById(alunoLogadoId)
                 .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
 
-        long acertos = 0;
 
+        if (prova.getTurma() == null || aluno.getTurma() == null || !prova.getTurma().getId().equals(aluno.getTurma().getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso negado: Você não está matriculado na turma desta prova!"
+            );
+        }
+
+        long acertos = 0;
 
         for (SubmissaoProvaDTO.RespostaItemDTO item : submissao.getRespostas()) {
 
@@ -62,7 +67,6 @@ public class RespostaService {
                 acertos++;
             }
 
-
             Resposta resposta = new Resposta();
             resposta.setAluno(aluno);
             resposta.setProva(prova);
@@ -73,8 +77,6 @@ public class RespostaService {
             repository.save(resposta);
         }
 
-
-
         return new ResultadoProvaDTO(
                 prova.getId(),
                 prova.getTitulo(),
@@ -84,8 +86,6 @@ public class RespostaService {
                 prova.getNotaMinimaAprovacao()
         );
     }
-
-
 
     public List<Resposta> listarTodas() {
         return repository.findAll();
