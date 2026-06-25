@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile; // <-- Import adicionado aqui
 
 import java.util.List;
 import java.util.Optional;
@@ -60,11 +61,11 @@ public class QuestaoController {
     public ResponseEntity<Questao> criar(@Valid @RequestBody Questao questao) {
         if (questao.getDisciplina() != null && questao.getDisciplina().getId() != null) {
             disciplinaService.buscarPorId(questao.getDisciplina().getId())
-                .ifPresent(questao::setDisciplina);
+                    .ifPresent(questao::setDisciplina);
         }
         if (questao.getSerie() != null && questao.getSerie().getId() != null) {
             serieService.buscarPorId(questao.getSerie().getId())
-                .ifPresent(questao::setSerie);
+                    .ifPresent(questao::setSerie);
         }
         Questao saved = service.salvar(questao);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
@@ -75,17 +76,17 @@ public class QuestaoController {
         return service.buscarPorId(id).map(questao -> {
             questao.setEnunciado(questaoAtualizada.getEnunciado());
             questao.setDificuldade(questaoAtualizada.getDificuldade());
-            
+
             if (questaoAtualizada.getDisciplina() != null && questaoAtualizada.getDisciplina().getId() != null) {
                 disciplinaService.buscarPorId(questaoAtualizada.getDisciplina().getId())
-                    .ifPresent(questao::setDisciplina);
+                        .ifPresent(questao::setDisciplina);
             }
-            
+
             if (questaoAtualizada.getSerie() != null && questaoAtualizada.getSerie().getId() != null) {
                 serieService.buscarPorId(questaoAtualizada.getSerie().getId())
-                    .ifPresent(questao::setSerie);
+                        .ifPresent(questao::setSerie);
             }
-            
+
             return ResponseEntity.ok(service.salvar(questao));
         }).orElse(ResponseEntity.notFound().build());
     }
@@ -97,5 +98,17 @@ public class QuestaoController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+
+    @PostMapping("/importar/{provaId}")
+    public ResponseEntity<String> importarQuestoes(@PathVariable Integer provaId,
+                                                   @RequestParam("file") MultipartFile file) {
+        try {
+            service.importarQuestoesPorCsv(file, provaId);
+            return ResponseEntity.ok("Importação concluída com sucesso! As questões foram adicionadas à prova.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao importar o arquivo: " + e.getMessage());
+        }
     }
 }
